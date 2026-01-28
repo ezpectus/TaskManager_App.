@@ -1,0 +1,76 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "S:\\vsrepos\\TaskManagerSolution\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DC2C4BA6-DDAE-4A1C-97D2-6F963614881C}|TaskManager.Application\\TaskManager.Application.csproj|s:\\vsrepos\\taskmanagersolution\\taskmanager.application\\mapping\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC2C4BA6-DDAE-4A1C-97D2-6F963614881C}|TaskManager.Application\\TaskManager.Application.csproj|solutionrelative:taskmanager.application\\mapping\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{047BA0BB-6A27-4FF0-96F8-FE9CED23FCE5}|TaskManager.Infrastucture\\TaskManager.Infrastucture.csproj|s:\\vsrepos\\taskmanagersolution\\taskmanager.infrastucture\\depeninjection\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{047BA0BB-6A27-4FF0-96F8-FE9CED23FCE5}|TaskManager.Infrastucture\\TaskManager.Infrastucture.csproj|solutionrelative:taskmanager.infrastucture\\depeninjection\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{047BA0BB-6A27-4FF0-96F8-FE9CED23FCE5}|TaskManager.Infrastucture\\TaskManager.Infrastucture.csproj|s:\\vsrepos\\taskmanagersolution\\taskmanager.infrastucture\\persistence\\contexts\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{047BA0BB-6A27-4FF0-96F8-FE9CED23FCE5}|TaskManager.Infrastucture\\TaskManager.Infrastucture.csproj|solutionrelative:taskmanager.infrastucture\\persistence\\contexts\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MappingProfile.cs",
+              "DocumentMoniker": "S:\\vsrepos\\TaskManagerSolution\\TaskManager.Application\\Mapping\\MappingProfile.cs",
+              "RelativeDocumentMoniker": "TaskManager.Application\\Mapping\\MappingProfile.cs",
+              "ToolTip": "S:\\vsrepos\\TaskManagerSolution\\TaskManager.Application\\Mapping\\MappingProfile.cs",
+              "RelativeToolTip": "TaskManager.Application\\Mapping\\MappingProfile.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-12T21:18:03.317Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "S:\\vsrepos\\TaskManagerSolution\\TaskManager.Infrastucture\\DepenInjection\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "TaskManager.Infrastucture\\DepenInjection\\DependencyInjection.cs",
+              "ToolTip": "S:\\vsrepos\\TaskManagerSolution\\TaskManager.Infrastucture\\DepenInjection\\DependencyInjection.cs",
+              "RelativeToolTip": "TaskManager.Infrastucture\\DepenInjection\\DependencyInjection.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-21T10:43:39.128Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "S:\\vsrepos\\TaskManagerSolution\\TaskManager.Infrastucture\\Persistence\\Contexts\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "TaskManager.Infrastucture\\Persistence\\Contexts\\ApplicationDbContext.cs",
+              "ToolTip": "S:\\vsrepos\\TaskManagerSolution\\TaskManager.Infrastucture\\Persistence\\Contexts\\ApplicationDbContext.cs",
+              "RelativeToolTip": "TaskManager.Infrastucture\\Persistence\\Contexts\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T13:50:24.279Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e506b91c-c606-466a-90a9-123d1d1e12b3}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

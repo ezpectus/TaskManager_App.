@@ -16,7 +16,6 @@ using TaskManager.Infrastucture.Persistence.Repositories;
 
 
 
-
 // Updated version with services registration, 27.01.26
 
 
@@ -56,6 +55,7 @@ public static class DependencyInjection
             .AddScoped<IActivityLogRepository, ActivityLogRepository>()
             .AddScoped<ITaskTagRepository, TaskTagRepository>()
             .AddScoped<IUserRoleRepository, UserRoleRepository>();
+    
 
     private static IServiceCollection AddServices(this IServiceCollection services)
         => services
