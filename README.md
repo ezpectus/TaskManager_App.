@@ -1,32 +1,30 @@
 # Task Manager App
 
-Backend-focused Task Manager built with .NET and EF Core.
+Task Manager App is a backend-focused educational project built with ASP.NET Core and PostgreSQL.
+
+The goal of the project is to explore backend architecture, data modeling, and design patterns in a real codebase without scaffolding, generators, or shortcuts.
+
+This repository represents a personal architectural experiment rather than a production-ready system.
 
 ## Tech Stack
-- .NET
-- EF Core
+- ASP.NET Core Web API
+- C#
 - PostgreSQL
-- Fluent API
-- Clean Architecture
+- Entity Framework Core (Fluent API)
+- Clean Architecture (simplified)
 
-## Project Structure
-- `src/` — application source code
-- `tests/` — unit and integration tests
-- `docs/` — architecture and decisions
+## Project Type
+- Personal
+- Educational / experimental
+- Backend-focused
 
-## Architecture
-Detailed explanation available in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+## Documentation
+- [Project Overview](docs/overview.md)
+- [Architecture Decisions](docs/architecture.md)
+- [Roadmap](docs/roadmap.md)
+  
 
-## Status
-This project focuses on backend architecture and learning trade-offs.
-Frontend, Swagger and additional tooling were not completed due to time constraints.
-
-📄 Documentation
-- Architecture overview → docs/architecture.md
-- Key decisions → docs/decisions.md
-- Roadmap → docs/roadmap.md
-
-https://www.canva.com/design/DAG_thgFeFw/6kJIV1_pnsmwHWIz_R8PWQ/edit
+---
 
 
 
