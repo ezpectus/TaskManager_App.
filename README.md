@@ -19,7 +19,7 @@ This repository represents a personal architectural experiment rather than a pro
 - Backend-focused
 
 ## Documentation
-- [Project Overview]([docs/overview.md](https://github.com/ezpectus/TaskManager_App./blob/master/docs/overview.md)])
+- [Project Overview](https://github.com/ezpectus/TaskManager_App./blob/master/docs/overview.md)
 - [Architecture Decisions](docs/architecture.md)
 - [Roadmap](docs/roadmap.md)
   
