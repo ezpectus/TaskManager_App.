@@ -1,40 +1,66 @@
 # Task Manager App
 
-Task Manager App is a backend-focused educational project built with ASP.NET Core and PostgreSQL.
+Task Manager App is a backend-focused educational and experimental project built with ASP.NET Core and PostgreSQL.
 
-The goal of the project is to explore backend architecture, data modeling, and design patterns in a real codebase without scaffolding, generators, or shortcuts.
+The project was created as a practical sandbox for testing backend architecture, data modeling, and design patterns in real code.  
+It is not intended to be a production-ready or commercial system.
 
-This repository represents a personal architectural experiment rather than a production-ready system.
+The primary focus is architectural clarity, explicit data modeling, and understanding how complexity grows in a solo-developed backend project.
+
+---
+
+## Purpose of the Project
+
+This project was built to:
+- practice backend architecture without scaffolding or code generators
+- apply Clean Architecture principles in a real codebase
+- experiment with EF Core when mapping an existing database schema
+- understand architectural trade-offs in long-term solo development
+
+The emphasis is on structure and reasoning rather than feature completeness or development speed.
+
+---
+
+## Current State
+
+The project currently includes a fully implemented backend foundation:
+- layered architecture
+- domain entities
+- manually designed PostgreSQL schema
+- EF Core used strictly for mapping and data access
+- repository and service layers
+- RESTful API endpoints
+
+Frontend and production-level features are intentionally not implemented.
+
+---
 
 ## Tech Stack
+
 - ASP.NET Core Web API
 - C#
 - PostgreSQL
 - Entity Framework Core (Fluent API)
 - Clean Architecture (simplified)
 
+---
+
 ## Project Type
-- Personal
+
+- Personal project
 - Educational / experimental
 - Backend-focused
+- Architecture-driven
 
+This repository should be viewed as an architectural experiment and learning resource rather than a finished product.
+
+---
 ## Documentation
 - [Project Overview](https://github.com/ezpectus/TaskManager_App./blob/master/docs/overview.md)
 - [Architecture Decisions](https://github.com/ezpectus/TaskManager_App./blob/master/docs/architecture.md)
 - [Roadmap](https://github.com/ezpectus/TaskManager_App./blob/master/docs/roadmap.md)
   
 
+
 ---
 
-
-
-**Task Manager App** :
-- PostgreSQL: Tables for User, Project, Task, and Tag with proper relations, indexes, and migrations
-- EF Core + Fluent API: Entity models with constraints, cascade rules, and validation logic
-- ASP.NET Core API: RESTful CRUD controllers following SOLID principles and dependency injection
-- JWT Authentication: Secure signup/login with role-based access control
-- Task Features: Deadlines, priorities, statuses, and tag filtering
-- Microservices (planned): Notifications, Analytics, and Auth separation via REST or RabbitMQ
-- Frontend (later): Blazor or React with responsive UI and drag-and-drop task board
-
-  
