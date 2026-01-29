@@ -20,8 +20,8 @@ This repository represents a personal architectural experiment rather than a pro
 
 ## Documentation
 - [Project Overview](https://github.com/ezpectus/TaskManager_App./blob/master/docs/overview.md)
-- [Architecture Decisions](docs/architecture.md)
-- [Roadmap](docs/roadmap.md)
+- [Architecture Decisions](https://github.com/ezpectus/TaskManager_App./blob/master/docs/architecture.md)
+- [Roadmap](https://github.com/ezpectus/TaskManager_App./blob/master/docs/roadmap.md)
   
 
 ---
