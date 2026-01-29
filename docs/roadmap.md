@@ -1,16 +1,48 @@
-Оставить и структурировать:
+# Project Roadmap
 
-Project Scope
+This document describes the current state and possible future directions of the project.
 
-Project Constraints
+---
 
-Deliverables
+## What Is Done
 
-Timeline (таблица)
+- Backend architecture
+- Database schema
+- Entity mappings
+- Repository and service layers
+- REST API endpoints
 
-Формат:
+---
 
-## Phase 1 — Database
-## Phase 2 — Domain & EF Core
-## Phase 3 — API
-## Phase 4 — Documentation
+## What Was Planned but Postponed
+
+- Frontend application
+- Authentication and authorization
+- Notifications
+- API documentation
+- Messaging and async communication
+
+These items were postponed due to time constraints.
+
+---
+
+## If Development Continues
+
+Possible future improvements:
+- Frontend (Blazor or React)
+- JWT authentication
+- Notifications service
+- Messaging with RabbitMQ or Kafka
+- Swagger / OpenAPI
+- Service extraction
+
+These are potential directions, not promises.
+
+---
+
+## Technologies That Could Be Added
+
+- RabbitMQ / Kafka
+- Blazor or React
+- Swagger / OpenAPI
+- Background workers
