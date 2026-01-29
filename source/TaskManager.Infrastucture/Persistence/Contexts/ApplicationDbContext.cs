@@ -35,8 +35,8 @@ namespace TaskManager.Infrastucture.Persistence.Contexts;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // автоматически подтягивает все классы конфигураций Fluent API
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        // automatically pulls in all Fluent API configuration classes
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
             base.OnModelCreating(modelBuilder);
         }
