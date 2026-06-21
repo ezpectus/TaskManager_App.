@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using TaskManager.Domain.Entities;
-using TaskManager.Application.DTOs;
-//updated 27.01.26
-
-
-// DTOs groups
 using TaskManager.Application.DTOs.Users;
 using TaskManager.Application.DTOs.Roles;
 using TaskManager.Application.DTOs.Tasks;
@@ -19,83 +9,38 @@ using TaskManager.Application.DTOs.Attachments;
 using TaskManager.Application.DTOs.Tags;
 using TaskManager.Application.DTOs.Activity;
 
-namespace TaskManager.Application.Mapping
+namespace TaskManager.Application.Mapping;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
+    public MappingProfile()
     {
-        public MappingProfile()
-        {
-            // ======================
-            // USER
-            // ======================
-            CreateMap<User, UserDto>();
+        CreateMap<User, UserDto>()
+            .ForMember(d => d.Roles, o => o.MapFrom(s => s.UserRoles.Select(ur => ur.Role)));
+        CreateMap<Role, RoleDto>();
+        CreateMap<RoleDto, Role>();
 
-            // ======================
-            // ROLE
-            // ======================
-            CreateMap<Role, RoleDto>();
+        CreateMap<ActivityLog, ActivityLogReadDto>()
+            .ForMember(d => d.TaskTitle, o => o.MapFrom(s => s.Task != null ? s.Task.Title : null))
+            .ForMember(d => d.Username, o => o.MapFrom(s => s.User != null ? s.User.Username : null));
 
-            // ======================
-            // ACTIVITY LOG
-            // ======================
-            CreateMap<ActivityLog, ActivityLogReadDto>()
-                .ForMember(
-                    d => d.TaskTitle,
-                    o => o.MapFrom(s => s.Task != null ? s.Task.Title : null)
-                )
-                .ForMember(
-                    d => d.Username,
-                    o => o.MapFrom(s => s.User != null ? s.User.Username : null)
-                );
+        CreateMap<FileAttachment, FileAttachmentDto>()
+            .ForMember(d => d.Username, o => o.MapFrom(s => s.User != null ? s.User.Username : null));
+        CreateMap<CreateAttachmentRequest, FileAttachment>();
 
-            // ======================
-            // FILE ATTACHMENT
-            // ======================
-            CreateMap<FileAttachment, FileAttachmentDto>()
-                .ForMember(
-                    d => d.Username,
-                    o => o.MapFrom(s => s.User != null ? s.User.Username : null)
-                );
+        CreateMap<Comment, CommentDto>()
+            .ForMember(d => d.Username, o => o.MapFrom(s => s.User != null ? s.User.Username : null));
+        CreateMap<CreateCommentRequest, Comment>();
 
-            CreateMap<CreateAttachmentRequest, FileAttachment>();
+        CreateMap<Subtask, SubtaskDto>();
+        CreateMap<CreateSubtaskRequest, Subtask>();
 
-            // ======================
-            // COMMENT
-            // ======================
-            CreateMap<Comment, CommentDto>()
-                .ForMember(
-                    d => d.Username,
-                    o => o.MapFrom(s => s.User != null ? s.User.Username : null)
-                );
+        CreateMap<Tag, TagDto>();
 
-            CreateMap<CreateCommentRequest, Comment>();
-
-            // ======================
-            // SUBTASK
-            // ======================
-            CreateMap<Subtask, SubtaskDto>();
-            CreateMap<CreateSubtaskRequest, Subtask>();
-
-            // ======================
-            // TAG
-            // ======================
-            CreateMap<Tag, TagDto>();
-
-            // ======================
-            // TASK
-            // ======================
-            CreateMap<TaskItem, TaskDto>()
-                .ForMember(
-                    d => d.Username,
-                    o => o.MapFrom(s => s.User != null ? s.User.Username : null)
-                );
-
-            CreateMap<CreateTaskRequest, TaskItem>();
-
-            CreateMap<UpdateTaskRequest, TaskItem>()
-                .ForAllMembers(o =>
-                    o.Condition((src, dest, value) => value != null)
-                );
-        }
+        CreateMap<TaskItem, TaskDto>()
+            .ForMember(d => d.Username, o => o.MapFrom(s => s.User != null ? s.User.Username : null));
+        CreateMap<CreateTaskRequest, TaskItem>();
+        CreateMap<UpdateTaskRequest, TaskItem>()
+            .ForAllMembers(o => o.Condition((src, dest, value) => value != null));
     }
 }

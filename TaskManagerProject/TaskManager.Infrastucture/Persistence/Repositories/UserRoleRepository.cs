@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastucture.Persistence.Contexts;
 
-
-
-//updated 05.01.26
 namespace TaskManager.Infrastucture.Persistence.Repositories;
 
 public class UserRoleRepository : IUserRoleRepository
@@ -38,14 +33,11 @@ public class UserRoleRepository : IUserRoleRepository
     }
 
     public async Task AddAsync(UserRole userRole, CancellationToken ct)
-    {
-        await _context.UserRoles.AddAsync(userRole,ct);
-        await _context.SaveChangesAsync(ct);
-    }
+        => await _context.UserRoles.AddAsync(userRole, ct);
 
-    public async Task RemoveAsync(UserRole userRole, CancellationToken ct)
+    public Task RemoveAsync(UserRole userRole, CancellationToken ct)
     {
         _context.UserRoles.Remove(userRole);
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 }

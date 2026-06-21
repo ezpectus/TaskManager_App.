@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-//updated 05.01.26
+using TaskManager.Application.DTOs.Roles;
 
 namespace TaskManager.Application.DTOs.Users;
-using TaskManager.Application.DTOs.Roles;
 
 public class UserDto
 {
@@ -17,6 +13,4 @@ public class UserDto
 
     public List<RoleDto> Roles { get; set; } = new();
 }
-
-
 

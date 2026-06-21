@@ -1,0 +1,24 @@
+# Audit report (local only, not for commit)
+audit.md
+
+# Visual Studio
+.vs/
+
+# IDE: VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# IDE: JetBrains Rider
+.idea/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS files
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.DS_Store

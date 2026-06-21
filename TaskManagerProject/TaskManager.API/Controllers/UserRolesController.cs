@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TaskManager.Application.DTOs;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.Interfaces;
-// 28.01.26 v 1.01
-
 
 namespace TaskManager.API.Controllers;
 
 [ApiController]
-[Route("api/user-roles")]
+[Route("api/v{version:apiVersion}/user-roles")]
+[ApiVersion("1.0")]
+[Authorize]
 public class UserRolesController : ControllerBase
 {
     private readonly IUserRoleService _service;
@@ -17,18 +18,21 @@ public class UserRolesController : ControllerBase
         _service = service;
     }
 
-    [HttpPost]
-   // public async Task<IActionResult> Add(Guid userId, Guid roleId, CancellationToken ct)
-   // {
-      //  await _service.AddAsync(userId, roleId, ct);
-      //  return NoContent();
-   // }
-
-
+    [HttpPost("{userId:guid}/{roleId:guid}")]
     public async Task<IActionResult> Add(Guid userId, Guid roleId, CancellationToken ct)
     {
         await _service.AssignRoleAsync(userId, roleId, ct);
         return NoContent();
     }
-}
 
+    [HttpDelete("{userId:guid}/{roleId:guid}")]
+    public async Task<IActionResult> Remove(Guid userId, Guid roleId, CancellationToken ct)
+    {
+        await _service.RemoveRoleAsync(userId, roleId, ct);
+        return NoContent();
+    }
+
+    [HttpGet("user/{userId:guid}")]
+    public async Task<IActionResult> GetUserRoles(Guid userId, CancellationToken ct)
+        => Ok(await _service.GetUserRolesAsync(userId, ct));
+}

@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TaskManager.Application.DTOs;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.DTOs.Subtasks;
 using TaskManager.Application.Interfaces;
-// 28.01.26 v 1.01
-
 
 namespace TaskManager.API.Controllers;
 
 [ApiController]
-[Route("api/subtasks")]
+[Route("api/v{version:apiVersion}/subtasks")]
+[ApiVersion("1.0")]
+[Authorize]
 public class SubtasksController : ControllerBase
 {
     private readonly ISubtaskService _service;
@@ -22,13 +23,31 @@ public class SubtasksController : ControllerBase
     public async Task<IActionResult> Create(CreateSubtaskRequest dto, CancellationToken ct)
     {
         var id = await _service.CreateAsync(dto, ct);
-        return Ok(id);
+        return CreatedAtAction(nameof(GetById), new { id }, null);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+    {
+        var subtask = await _service.GetByIdAsync(id, ct);
+        return subtask == null ? NotFound() : Ok(subtask);
     }
 
     [HttpGet("task/{taskId:guid}")]
-   // public async Task<IActionResult> GetByTask(Guid taskId, CancellationToken ct)
-      //  => Ok(await _service.GetByTaskIdAsync(taskId, ct));
-
     public async Task<IActionResult> GetByTask(Guid taskId, CancellationToken ct)
-      => Ok(await _service.GetByIdAsync(taskId, ct));
+        => Ok(await _service.GetAllByTaskIdAsync(taskId, ct));
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, SubtaskDto dto, CancellationToken ct)
+    {
+        var ok = await _service.UpdateAsync(id, dto, ct);
+        return ok ? NoContent() : NotFound();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+    {
+        var ok = await _service.DeleteAsync(id, ct);
+        return ok ? NoContent() : NotFound();
+    }
 }

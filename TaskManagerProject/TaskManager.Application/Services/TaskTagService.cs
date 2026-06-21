@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Application.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
-//updated 26.01.26
 
-// Application/Services/TaskTagService.cs
 namespace TaskManager.Application.Services;
 
 public class TaskTagService : ITaskTagService
 {
     private readonly ITaskTagRepository _repo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public TaskTagService(ITaskTagRepository repo)
-        => _repo = repo;
+    public TaskTagService(ITaskTagRepository repo, IUnitOfWork unitOfWork)
+    {
+        _repo = repo;
+        _unitOfWork = unitOfWork;
+    }
 
     public async Task<bool> AddTagToTaskAsync(Guid taskId, Guid tagId, CancellationToken ct)
     {
@@ -28,12 +29,18 @@ public class TaskTagService : ITaskTagService
             TaskId = taskId,
             TagId = tagId
         }, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
 
         return true;
     }
 
     public async Task<bool> RemoveTagFromTaskAsync(Guid taskId, Guid tagId, CancellationToken ct)
-        => await _repo.RemoveAsync(taskId, tagId, ct);
+    {
+        var removed = await _repo.RemoveAsync(taskId, tagId, ct);
+        if (removed)
+            await _unitOfWork.SaveChangesAsync(ct);
+        return removed;
+    }
 
     public async Task<IEnumerable<Guid>> GetTagsForTaskAsync(Guid taskId, CancellationToken ct)
     {

@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Application.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
-using AutoMapper;
-
-//updated 05.01.26
-// Application/Services/UserRoleService.cs
-
 
 namespace TaskManager.Application.Services;
 
@@ -19,15 +13,18 @@ public class UserRoleService : IUserRoleService
     private readonly IUserRepository _userRepo;
     private readonly IRoleRepository _roleRepo;
     private readonly IUserRoleRepository _userRoleRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
     public UserRoleService(
         IUserRepository userRepo,
         IRoleRepository roleRepo,
-        IUserRoleRepository userRoleRepo)
+        IUserRoleRepository userRoleRepo,
+        IUnitOfWork unitOfWork)
     {
         _userRepo = userRepo;
         _roleRepo = roleRepo;
         _userRoleRepo = userRoleRepo;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<bool> AssignRoleAsync(Guid userId, Guid roleId, CancellationToken ct)
@@ -46,6 +43,7 @@ public class UserRoleService : IUserRoleService
             UserId = userId,
             RoleId = roleId
         }, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
 
         return true;
     }
@@ -56,6 +54,7 @@ public class UserRoleService : IUserRoleService
         if (existing == null) return false;
 
         await _userRoleRepo.RemoveAsync(existing, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 

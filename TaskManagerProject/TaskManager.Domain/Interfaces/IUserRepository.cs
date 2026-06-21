@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Domain.Entities;
 
-//updated 05.01.26
 namespace TaskManager.Domain.Interfaces;
 
 public interface IUserRepository
@@ -20,7 +17,5 @@ public interface IUserRepository
 
     Task<bool> ExistsByEmailAsync(string email, CancellationToken ct);
 }
-
-
 
 

@@ -1,42 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TaskManager.Domain.Entities;
-using TaskManager.Domain.Interfaces;
-using TaskManager.Application.Interfaces;
 using AutoMapper;
 using TaskManager.Application.DTOs.Comments;
-//updated 05.01.26
+using TaskManager.Application.Interfaces;
+using TaskManager.Domain.Entities;
+using TaskManager.Domain.Interfaces;
 
-
-// Application/Services/CommentService.cs
 namespace TaskManager.Application.Services;
 
 public class CommentService : ICommentService
 {
     private readonly ICommentRepository _repo;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CommentService(ICommentRepository repo, IMapper mapper)
+    public CommentService(ICommentRepository repo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _repo = repo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Guid> CreateAsync(CreateCommentRequest dto, CancellationToken ct)
     {
-        var entity = new Comment
-        {
-            Id = Guid.NewGuid(),
-            Content = dto.Content,
-            CreatedAt = DateTime.UtcNow,
-            TaskId = dto.TaskId,
-            UserId = dto.UserId
-        };
+        var entity = Comment.Create(dto.Content, dto.TaskId, dto.UserId);
 
         await _repo.AddAsync(entity, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return entity.Id;
     }
 
@@ -57,8 +48,9 @@ public class CommentService : ICommentService
         var e = await _repo.GetByIdAsync(id, ct);
         if (e == null) return false;
 
-        e.Content = dto.Content;
+        e.UpdateContent(dto.Content);
         await _repo.UpdateAsync(e, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 
@@ -67,7 +59,9 @@ public class CommentService : ICommentService
         var e = await _repo.GetByIdAsync(id, ct);
         if (e == null) return false;
 
-        await _repo.DeleteAsync(id, ct);
+        e.SoftDelete();
+        await _repo.UpdateAsync(e, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 }

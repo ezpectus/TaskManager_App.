@@ -1,44 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using TaskManager.Application.DTOs.Subtasks;
+using TaskManager.Application.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
-using TaskManager.Application.Interfaces;
-//updated 05.01.26
-
-// Application/Services/SubtaskService.cs
-
 
 namespace TaskManager.Application.Services;
-
-
 
 public class SubtaskService : ISubtaskService
 {
     private readonly ISubtaskRepository _repo;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public SubtaskService(ISubtaskRepository repo, IMapper mapper)
+    public SubtaskService(ISubtaskRepository repo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _repo = repo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Guid> CreateAsync(CreateSubtaskRequest dto, CancellationToken ct)
     {
-        var entity = new Subtask
-        {
-            Id = Guid.NewGuid(),
-            Title = dto.Title,
-            TaskId = dto.TaskId,
-            IsCompleted = false
-        };
+        var entity = Subtask.Create(dto.Title, dto.TaskId);
 
         await _repo.AddAsync(entity, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return entity.Id;
     }
 
@@ -59,10 +48,11 @@ public class SubtaskService : ISubtaskService
         var e = await _repo.GetByIdAsync(id, ct);
         if (e == null) return false;
 
-        e.Title = dto.Title;
-        e.IsCompleted = dto.IsCompleted;
+        e.Rename(dto.Title);
+        if (dto.IsCompleted) e.Complete(); else e.Reopen();
 
         await _repo.UpdateAsync(e, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 
@@ -71,7 +61,9 @@ public class SubtaskService : ISubtaskService
         var e = await _repo.GetByIdAsync(id, ct);
         if (e == null) return false;
 
-        await _repo.DeleteAsync(e, ct);
+        e.SoftDelete();
+        await _repo.UpdateAsync(e, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 }

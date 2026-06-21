@@ -1,16 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastucture.Persistence.Contexts;
-
-
-// обновленно 03.01.26
-
 
 namespace TaskManager.Infrastucture.Persistence.Repositories;
 
@@ -42,21 +36,18 @@ public class UserRepository : IUserRepository
             .ToListAsync(ct);
 
     public async Task AddAsync(User user, CancellationToken ct)
-    {
-        await _context.Users.AddAsync(user, ct);
-        await _context.SaveChangesAsync(ct);
-    }
+        => await _context.Users.AddAsync(user, ct);
 
-    public async Task UpdateAsync(User user, CancellationToken ct)
+    public Task UpdateAsync(User user, CancellationToken ct)
     {
         _context.Users.Update(user);
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(User user, CancellationToken ct)
+    public Task DeleteAsync(User user, CancellationToken ct)
     {
         _context.Users.Remove(user);
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 
     public async Task<bool> ExistsByEmailAsync(string email, CancellationToken ct)

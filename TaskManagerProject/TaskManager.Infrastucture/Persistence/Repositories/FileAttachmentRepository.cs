@@ -1,14 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastucture.Persistence.Contexts;
-
-//updated 05.01.26
 
 namespace TaskManager.Infrastucture.Persistence.Repositories;
 
@@ -39,14 +35,11 @@ public class FileAttachmentRepository : IFileAttachmentRepository
             .ToListAsync(ct);
 
     public async Task AddAsync(FileAttachment attachment, CancellationToken ct)
-    {
-        await _context.Attachments.AddAsync(attachment, ct);
-        await _context.SaveChangesAsync(ct);
-    }
+        => await _context.Attachments.AddAsync(attachment, ct);
 
-    public async Task DeleteAsync(FileAttachment attachment, CancellationToken ct)
+    public Task DeleteAsync(FileAttachment attachment, CancellationToken ct)
     {
         _context.Attachments.Remove(attachment);
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 }

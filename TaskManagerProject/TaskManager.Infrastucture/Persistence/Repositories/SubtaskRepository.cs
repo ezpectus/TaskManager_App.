@@ -1,16 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastucture.Persistence.Contexts;
-
-
-//updated 05.01.26
-
 
 namespace TaskManager.Infrastucture.Persistence.Repositories;
 
@@ -34,20 +28,17 @@ public class SubtaskRepository : ISubtaskRepository
             .ToListAsync(ct);
 
     public async Task AddAsync(Subtask subtask, CancellationToken ct)
-    {
-        await _context.Subtasks.AddAsync(subtask, ct);
-        await _context.SaveChangesAsync(ct);
-    }
+        => await _context.Subtasks.AddAsync(subtask, ct);
 
-    public async Task UpdateAsync(Subtask subtask, CancellationToken ct)
+    public Task UpdateAsync(Subtask subtask, CancellationToken ct)
     {
         _context.Subtasks.Update(subtask);
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(Subtask subtask, CancellationToken ct)
+    public Task DeleteAsync(Subtask subtask, CancellationToken ct)
     {
         _context.Subtasks.Remove(subtask);
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 }

@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TaskManager.Application.DTOs;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TaskManager.Application.DTOs.Roles;
 using TaskManager.Application.Interfaces;
-// 28.01.26 v 1.01
 
 namespace TaskManager.API.Controllers;
 
 [ApiController]
-[Route("api/roles")]
+[Route("api/v{version:apiVersion}/roles")]
+[ApiVersion("1.0")]
+[Authorize]
 public class RolesController : ControllerBase
 {
     private readonly IRoleService _service;
@@ -19,4 +22,32 @@ public class RolesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken ct)
         => Ok(await _service.GetAllAsync(ct));
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+    {
+        var role = await _service.GetByIdAsync(id, ct);
+        return role == null ? NotFound() : Ok(role);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(RoleDto dto, CancellationToken ct)
+    {
+        var id = await _service.CreateAsync(dto, ct);
+        return CreatedAtAction(nameof(GetById), new { id }, null);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, RoleDto dto, CancellationToken ct)
+    {
+        var ok = await _service.UpdateAsync(id, dto, ct);
+        return ok ? NoContent() : NotFound();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+    {
+        var ok = await _service.DeleteAsync(id, ct);
+        return ok ? NoContent() : NotFound();
+    }
 }

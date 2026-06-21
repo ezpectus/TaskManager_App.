@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-//updated 26/01/26
+using TaskManager.Domain.Enums;
+
 namespace TaskManager.Application.DTOs.Tasks;
 
 public class CreateTaskRequest
 {
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public string Status { get; set; } = null!;
-    public string Priority { get; set; } = null!;
+    public TaskStatus Status { get; set; } = TaskStatus.Todo;
+    public TaskPriority Priority { get; set; } = TaskPriority.Medium;
     public DateTime Deadline { get; set; }
 
     public Guid? UserId { get; set; }
 }
-

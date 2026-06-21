@@ -1,13 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastucture.Persistence.Contexts;
-//updated 05.01.26
 
 namespace TaskManager.Infrastucture.Persistence.Repositories;
 
@@ -32,19 +29,13 @@ public class ActivityLogRepository : IActivityLogRepository
         await _context.ActivityLogs.FindAsync([id], ct);
 
     public async Task AddAsync(ActivityLog log, CancellationToken ct)
-    {
-        await _context.ActivityLogs.AddAsync(log, ct);
-        await _context.SaveChangesAsync(ct);
-    }
+        => await _context.ActivityLogs.AddAsync(log, ct);
 
     public async Task DeleteAsync(Guid id, CancellationToken ct)
     {
         var entity = await _context.ActivityLogs.FindAsync([id], ct);
         if (entity != null)
-        {
             _context.ActivityLogs.Remove(entity);
-            await _context.SaveChangesAsync(ct);
-        }
     }
 
 }

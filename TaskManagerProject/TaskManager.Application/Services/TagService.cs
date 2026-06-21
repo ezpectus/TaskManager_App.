@@ -1,28 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using TaskManager.Application.DTOs.Tags;
+using TaskManager.Application.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
-using TaskManager.Application.Interfaces;
-//updated 05.01.26
 
-
-// Application/Services/TagService.cs
 namespace TaskManager.Application.Services;
 
 public class TagService : ITagService
 {
     private readonly ITagRepository _repo;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public TagService(ITagRepository repo, IMapper mapper)
+    public TagService(ITagRepository repo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _repo = repo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Guid> CreateAsync(TagDto dto, CancellationToken ct)
@@ -31,6 +28,7 @@ public class TagService : ITagService
         tag.Id = Guid.NewGuid();
 
         await _repo.AddAsync(tag, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return tag.Id;
     }
 
@@ -52,6 +50,7 @@ public class TagService : ITagService
         if (tag == null) return false;
 
         await _repo.DeleteAsync(tag, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 }

@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Application", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Domain", "TaskManager.Domain\TaskManager.Domain.csproj", "{9D84EB2A-8042-4577-806A-AA46D8CB7865}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Infrastucture", "TaskManager.Infrastucture\TaskManager.Infrastucture.csproj", "{047BA0BB-6A27-4FF0-96F8-FE9CED23FCE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Infrastructure", "TaskManager.Infrastructure\TaskManager.Infrastructure.csproj", "{047BA0BB-6A27-4FF0-96F8-FE9CED23FCE5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9D84EB2A-8042-4577-806A-AA46D8CB7865} = {9D84EB2A-8042-4577-806A-AA46D8CB7865}
 	EndProjectSection

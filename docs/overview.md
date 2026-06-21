@@ -28,34 +28,34 @@ The focus was intentionally placed on structure, reasoning, and architectural de
 
 ### What Is Implemented
 
-At its current stage, the project includes a fully working backend foundation:
+The project is now a full-stack application with both backend and frontend:
 
-- ASP.NET Core Web API
-- Layered architecture with clear responsibility boundaries
-- Domain entities modeled around real database constraints
-- Manually designed PostgreSQL schema
-- Entity Framework Core used for mapping an existing database schema
-- Repository and service layers
-- Relationships between entities with explicit configuration
-- Business logic separated from API concerns
-- RESTful API endpoints
+**Backend:**
+- ASP.NET Core 9 Web API with Clean Architecture
+- JWT authentication with BCrypt password hashing
+- Domain-Driven Design: entity factory methods, encapsulated state transitions
+- Unit of Work pattern with `IUnitOfWork`
+- EF Core with PostgreSQL, Fluent API configuration
+- Soft delete with query filters (TaskItem, Comment, Subtask)
+- Optimistic concurrency control (RowVersion on TaskItem)
+- Pagination and filtering for tasks
+- API versioning (URL segment: `api/v1/...`)
+- Automatic activity logging via SaveChanges interceptor
+- FluentValidation for all DTOs
+- AutoMapper for entity-to-DTO mapping
+- Serilog structured logging
+- Global exception handling middleware
+- Swagger/OpenAPI with XML comments and JWT Bearer scheme
+- CORS and health checks
+- Unit tests (xUnit + Moq): 30+ tests
 
-The backend logic is functional and internally consistent.
-
----
-
-### What Is Not Implemented
-
-The following components are intentionally not implemented yet:
-
-- Frontend application
-- Authentication and authorization
-- Notifications
-- Swagger / OpenAPI documentation
-- Messaging and asynchronous communication
-- Production-level polishing and optimization
-
-The absence of these features is a conscious decision driven by time constraints, not by a lack of understanding or experience.
+**Frontend:**
+- React 19 + TypeScript + TailwindCSS + Vite
+- JWT-based authentication with protected routes
+- Dashboard with task grid, search, and create modal
+- Task detail page with inline editing, subtasks, and comments
+- Kanban board with 3 columns (To Do / In Progress / Done)
+- Responsive layout with Lucide icons
 
 ---
 
@@ -108,14 +108,12 @@ This decision emerged from practical experience rather than theoretical guidelin
 
 ## Unit of Work
 
-A custom Unit of Work abstraction was initially considered but later removed.
+A custom Unit of Work abstraction (`IUnitOfWork`) is implemented in the Domain layer with a concrete implementation in Infrastructure.
 
-Reasons:
-- EF Core already manages transactions and change tracking
-- additional abstraction increased complexity without clear benefits
-- transparency and debuggability were prioritized over architectural formality
-
-Repositories interact directly with the DbContext.
+- Services inject `IUnitOfWork` and call `SaveChangesAsync` after write operations
+- Repositories no longer call `SaveChangesAsync` internally
+- This ensures transactional consistency across multiple repository operations
+- An `ActivityLogInterceptor` automatically logs entity changes on `SaveChangesAsync`
 
 ---
 
@@ -136,15 +134,25 @@ As a result:
 
 ## Planned Features (If Development Continues)
 
-If development continues in the future, potential directions include:
-- frontend application (Blazor or React)
-- JWT-based authentication and authorization
-- notifications system
-- messaging via RabbitMQ or Kafka
-- Swagger / OpenAPI integration
-- extraction of additional services
+The following features are now implemented:
+- ~~frontend application (React)~~ ✅
+- ~~JWT-based authentication and authorization~~ ✅
+- ~~Swagger / OpenAPI integration~~ ✅
+- ~~Unit of Work pattern~~ ✅
+- ~~Pagination and filtering~~ ✅
+- ~~Soft delete~~ ✅
+- ~~API versioning~~ ✅
+- ~~Unit tests~~ ✅
 
-These are possible directions, not commitments.
+Potential future directions:
+- Notifications system (email, in-app)
+- Messaging via RabbitMQ or Kafka
+- Real-time updates with SignalR
+- Docker containerization and CI/CD
+- Mobile application (React Native)
+- Advanced analytics and reporting
+
+See [future.md](future.md) and [ideas.md](ideas.md) for detailed plans.
 
 ---
 
@@ -164,12 +172,21 @@ This project should be viewed as:
 
 ## Tech Stack
 
-- ASP.NET Core Web API
-- C#
-- PostgreSQL
-- Entity Framework Core
-- Fluent API
-- Clean Architecture (simplified)
+### Backend
+- ASP.NET Core 9 Web API
+- C# / .NET 9
+- PostgreSQL + EF Core 9
+- AutoMapper, FluentValidation, Serilog
+- Asp.Versioning.Mvc (API versioning)
+- xUnit + Moq (testing)
+
+### Frontend
+- React 19
+- TypeScript
+- TailwindCSS 3
+- Vite 7
+- React Router 7
+- Lucide React (icons)
 
 ---
 

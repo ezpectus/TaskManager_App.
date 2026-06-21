@@ -1,29 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using AutoMapper;
+using TaskManager.Application.DTOs.Attachments;
 using TaskManager.Application.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
-using AutoMapper;
-using TaskManager.Application.DTOs.Attachments;
-//updated 05.01.26
 
-// Application/Services/FileAttachmentService.cs
 namespace TaskManager.Application.Services;
-
 
 public class FileAttachmentService : IFileAttachmentService
 {
     private readonly IFileAttachmentRepository _repo;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public FileAttachmentService(IFileAttachmentRepository repo)
+    public FileAttachmentService(IFileAttachmentRepository repo, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _repo = repo;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<Guid> CreateAsync(CreateAttachmentRequest dto, CancellationToken ct)
@@ -39,6 +35,7 @@ public class FileAttachmentService : IFileAttachmentService
         };
 
         await _repo.AddAsync(entity, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return entity.Id;
     }
 
@@ -46,34 +43,13 @@ public class FileAttachmentService : IFileAttachmentService
     public async Task<FileAttachmentDto?> GetByIdAsync(Guid id, CancellationToken ct)
     {
         var a = await _repo.GetByIdAsync(id, ct);
-        if (a == null) return null;
-
-        return new FileAttachmentDto
-        {
-            Id = a.Id,
-            FileName = a.FileName,
-            Url = a.Url,
-            UploadedAt = a.UploadedAt,
-            TaskId = a.TaskId,
-            UserId = a.UserId,
-            Username = a.User?.Username
-        };
+        return a == null ? null : _mapper.Map<FileAttachmentDto>(a);
     }
 
     public async Task<IEnumerable<FileAttachmentDto>> GetByTaskIdAsync(Guid taskId, CancellationToken ct)
     {
         var list = await _repo.GetByTaskIdAsync(taskId, ct);
-
-        return list.Select(a => new FileAttachmentDto
-        {
-            Id = a.Id,
-            FileName = a.FileName,
-            Url = a.Url,
-            UploadedAt = a.UploadedAt,
-            TaskId = a.TaskId,
-            UserId = a.UserId,
-            Username = a.User?.Username
-        });
+        return _mapper.Map<IEnumerable<FileAttachmentDto>>(list);
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken ct)
@@ -82,6 +58,7 @@ public class FileAttachmentService : IFileAttachmentService
         if (a == null) return false;
 
         await _repo.DeleteAsync(a, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 }

@@ -1,18 +1,16 @@
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using TaskManager.Application.DTOs;
 using TaskManager.Application.DTOs.Tasks;
 using TaskManager.Application.Interfaces;
-// 28.01.26 v 1.01
-
-
+using TaskManager.Domain.Enums;
 
 namespace TaskManager.API.Controllers;
 
 [ApiController]
-[Route("api/tasks")]
+[Route("api/v{version:apiVersion}/tasks")]
+[ApiVersion("1.0")]
+[Authorize]
 public class TasksController : ControllerBase
 {
     private readonly ITaskService _service;
@@ -34,6 +32,34 @@ public class TasksController : ControllerBase
     {
         var task = await _service.GetByIdAsync(id, ct);
         return task == null ? NotFound() : Ok(task);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] TaskStatus? status = null,
+        [FromQuery] TaskPriority? priority = null,
+        [FromQuery] Guid? userId = null,
+        [FromQuery] string? searchTerm = null,
+        CancellationToken ct = default)
+    {
+        if (status.HasValue || priority.HasValue || userId.HasValue ||
+            !string.IsNullOrWhiteSpace(searchTerm) || page != 1 || pageSize != 20)
+        {
+            var filter = new TaskFilterRequest
+            {
+                Page = page,
+                PageSize = pageSize,
+                Status = status,
+                Priority = priority,
+                UserId = userId,
+                SearchTerm = searchTerm
+            };
+            return Ok(await _service.GetPagedAsync(filter, ct));
+        }
+
+        return Ok(await _service.GetAllAsync(ct));
     }
 
     [HttpPut("{id:guid}")]

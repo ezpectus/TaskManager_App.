@@ -1,15 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Interfaces;
 using TaskManager.Infrastucture.Persistence.Contexts;
 
-//updated 05.01.26
-namespace TaskManager.Infrastructure.Persistence.Repositories;
+namespace TaskManager.Infrastucture.Persistence.Repositories;
 
 public class RoleRepository : IRoleRepository
 {
@@ -27,20 +24,17 @@ public class RoleRepository : IRoleRepository
         await _context.Roles.ToListAsync(ct);
 
     public async Task AddAsync(Role role, CancellationToken ct)
-    {
-        await _context.Roles.AddAsync(role, ct);
-        await _context.SaveChangesAsync(ct);
-    }
+        => await _context.Roles.AddAsync(role, ct);
 
-    public async Task UpdateAsync(Role role, CancellationToken ct)
+    public Task UpdateAsync(Role role, CancellationToken ct)
     {
         _context.Roles.Update(role);
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteAsync(Role role, CancellationToken ct)
+    public Task DeleteAsync(Role role, CancellationToken ct)
     {
         _context.Roles.Remove(role);
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 }
