@@ -8,18 +8,21 @@ using TaskManager.Domain.Enums;
 using TaskManager.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.API.Controllers;
+using TaskManager.Application.DTOs.Activity;
 
 namespace TaskManager.Test.Controllers;
 
 public class TasksControllerTests
 {
     private readonly Mock<ITaskService> _serviceMock;
+    private readonly Mock<IActivityLogService> _activityLogMock;
     private readonly TasksController _controller;
 
     public TasksControllerTests()
     {
         _serviceMock = new Mock<ITaskService>();
-        _controller = new TasksController(_serviceMock.Object);
+        _activityLogMock = new Mock<IActivityLogService>();
+        _controller = new TasksController(_serviceMock.Object, _activityLogMock.Object);
     }
 
     [Fact]
@@ -165,5 +168,45 @@ public class TasksControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result);
         var returned = Assert.IsAssignableFrom<IEnumerable<TaskDto>>(okResult.Value);
         Assert.Equal(2, returned.Count());
+    }
+
+    [Fact]
+    public async Task Assign_Should_Return404_When_TaskOrUserNotFound()
+    {
+        _serviceMock.Setup(s => s.AssignAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        var result = await _controller.Assign(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None);
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task Assign_Should_Return204_When_Success()
+    {
+        _serviceMock.Setup(s => s.AssignAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var result = await _controller.Assign(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None);
+
+        Assert.IsType<NoContentResult>(result);
+    }
+
+    [Fact]
+    public async Task GetActivityLog_Should_Return200_WithLogs()
+    {
+        var logs = new List<ActivityLogReadDto>
+        {
+            new() { Id = Guid.NewGuid(), ActionType = "Created", Timestamp = DateTime.UtcNow },
+        };
+
+        _activityLogMock.Setup(s => s.GetByTaskIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(logs);
+
+        var result = await _controller.GetActivityLog(Guid.NewGuid(), CancellationToken.None);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returned = Assert.IsAssignableFrom<IEnumerable<ActivityLogReadDto>>(okResult.Value);
+        Assert.Single(returned);
     }
 }

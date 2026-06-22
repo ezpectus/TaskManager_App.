@@ -14,4 +14,5 @@ public interface ITaskService
     Task<PagedResult<TaskDto>> GetPagedAsync(TaskFilterRequest filter, CancellationToken ct);
     Task<bool> UpdateAsync(Guid id, UpdateTaskRequest dto, CancellationToken ct);
     Task<bool> DeleteAsync(Guid id, CancellationToken ct);
+    Task<bool> AssignAsync(Guid taskId, Guid userId, CancellationToken ct);
 }

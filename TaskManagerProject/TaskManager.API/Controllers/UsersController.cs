@@ -49,6 +49,22 @@ public class UsersController : ControllerBase
         return ok ? NoContent() : NotFound();
     }
 
+    [HttpPut("{id:guid}/profile")]
+    public async Task<IActionResult> UpdateProfile(Guid id, UpdateUserRequest dto, CancellationToken ct)
+    {
+        var ok = await _service.UpdateProfileAsync(id, dto, ct);
+        return ok ? NoContent() : NotFound();
+    }
+
+    [HttpPost("{id:guid}/change-password")]
+    public async Task<IActionResult> ChangePassword(Guid id, ChangePasswordRequest request, CancellationToken ct)
+    {
+        if (id != request.UserId)
+            return BadRequest("User ID mismatch");
+        var ok = await _service.ChangePasswordAsync(request, ct);
+        return ok ? NoContent() : BadRequest("Current password is incorrect or user not found");
+    }
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {

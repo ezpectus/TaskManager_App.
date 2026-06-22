@@ -9,6 +9,7 @@ import DashboardPage from './pages/DashboardPage'
 import TaskDetailPage from './pages/TaskDetailPage'
 import KanbanPage from './pages/KanbanPage'
 import ProfilePage from './pages/ProfilePage'
+import AnalyticsPage from './pages/AnalyticsPage'
 import NotFoundPage from './pages/NotFoundPage'
 import type { ReactNode } from 'react'
 
@@ -61,6 +62,16 @@ export default function App() {
                   <ProtectedRoute>
                     <Layout>
                       <ProfilePage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <AnalyticsPage />
                     </Layout>
                   </ProtectedRoute>
                 }

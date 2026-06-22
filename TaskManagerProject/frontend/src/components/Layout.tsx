@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
-import { LayoutDashboard, Trello, LogOut, CheckSquare, Moon, Sun, User } from 'lucide-react'
+import { LayoutDashboard, Trello, LogOut, CheckSquare, Moon, Sun, User, BarChart3 } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -33,6 +33,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             </NavLink>
             <NavLink to="/kanban" className={linkClass}>
               <Trello size={18} /> Kanban
+            </NavLink>
+            <NavLink to="/analytics" className={linkClass}>
+              <BarChart3 size={18} /> Analytics
             </NavLink>
             <NavLink to="/profile" className={linkClass}>
               <User size={18} /> Profile

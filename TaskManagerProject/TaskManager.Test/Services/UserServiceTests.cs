@@ -1,5 +1,6 @@
 using AutoMapper;
 using Moq;
+using TaskManager.Application.DTOs.Auth;
 using TaskManager.Application.DTOs.Users;
 using TaskManager.Application.Mapping;
 using TaskManager.Application.Services;
@@ -95,6 +96,94 @@ public class UserServiceTests
         var result = await _service.DeleteAsync(Guid.NewGuid(), CancellationToken.None);
 
         Assert.True(result);
+        _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_Should_ReturnFalse_When_UserNotFound()
+    {
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        var request = new ChangePasswordRequest
+        {
+            UserId = Guid.NewGuid(),
+            CurrentPassword = "old",
+            NewPassword = "new"
+        };
+
+        var result = await _service.ChangePasswordAsync(request, CancellationToken.None);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_Should_ReturnFalse_When_CurrentPasswordWrong()
+    {
+        var hash = BCrypt.Net.BCrypt.HashPassword("correctpassword");
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new User { Id = Guid.NewGuid(), Username = "test", Email = "test@test.com", PasswordHash = hash });
+
+        var request = new ChangePasswordRequest
+        {
+            UserId = Guid.NewGuid(),
+            CurrentPassword = "wrongpassword",
+            NewPassword = "newpassword"
+        };
+
+        var result = await _service.ChangePasswordAsync(request, CancellationToken.None);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_Should_ReturnTrue_When_CurrentPasswordCorrect()
+    {
+        var hash = BCrypt.Net.BCrypt.HashPassword("oldpassword");
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new User { Id = Guid.NewGuid(), Username = "test", Email = "test@test.com", PasswordHash = hash });
+
+        var request = new ChangePasswordRequest
+        {
+            UserId = Guid.NewGuid(),
+            CurrentPassword = "oldpassword",
+            NewPassword = "newpassword123"
+        };
+
+        var result = await _service.ChangePasswordAsync(request, CancellationToken.None);
+
+        Assert.True(result);
+        _repoMock.Verify(r => r.UpdateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
+        _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_Should_ReturnFalse_When_UserNotFound()
+    {
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        var dto = new UpdateUserRequest { Username = "newname", Email = "new@test.com" };
+
+        var result = await _service.UpdateProfileAsync(Guid.NewGuid(), dto, CancellationToken.None);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_Should_ReturnTrue_And_UpdateFields()
+    {
+        var user = new User { Id = Guid.NewGuid(), Username = "oldname", Email = "old@test.com" };
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        var dto = new UpdateUserRequest { Username = "newname", Email = "new@test.com" };
+
+        var result = await _service.UpdateProfileAsync(user.Id, dto, CancellationToken.None);
+
+        Assert.True(result);
+        Assert.Equal("newname", user.Username);
+        Assert.Equal("new@test.com", user.Email);
         _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

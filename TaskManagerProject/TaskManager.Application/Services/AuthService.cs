@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TaskManager.Application.DTOs.Auth;
@@ -36,14 +37,70 @@ public class AuthService : IAuthService
         if (user == null) return null;
 
         var token = GenerateJwtToken(user.Id, user.Username, user.Email);
+        var refreshToken = GenerateRefreshToken();
 
         return new LoginResponse
         {
             Token = token,
+            RefreshToken = refreshToken,
             ExpiresAt = DateTime.UtcNow.AddHours(24),
             UserId = user.Id,
             Username = user.Username
         };
+    }
+
+    public async Task<LoginResponse?> RefreshAsync(string refreshToken, CancellationToken ct)
+    {
+        var jwtKey = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT key not configured");
+        var jwtIssuer = _configuration["Jwt:Issuer"] ?? "TaskManager";
+        var jwtAudience = _configuration["Jwt:Audience"] ?? "TaskManager";
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(refreshToken, new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtIssuer,
+                ValidateAudience = true,
+                ValidAudience = jwtAudience,
+                ValidateLifetime = true,
+                IssuerSigningKey = securityKey
+            }, out _);
+
+            var userIdClaim = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var usernameClaim = principal.FindFirst(JwtRegisteredClaimNames.UniqueName)?.Value;
+            var emailClaim = principal.FindFirst(JwtRegisteredClaimNames.Email)?.Value;
+
+            if (userIdClaim == null || usernameClaim == null || emailClaim == null)
+                return null;
+
+            var newToken = GenerateJwtToken(Guid.Parse(userIdClaim), usernameClaim, emailClaim);
+            var newRefreshToken = GenerateRefreshToken();
+
+            return new LoginResponse
+            {
+                Token = newToken,
+                RefreshToken = newRefreshToken,
+                ExpiresAt = DateTime.UtcNow.AddHours(24),
+                UserId = Guid.Parse(userIdClaim),
+                Username = usernameClaim
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
     }
 
     private string GenerateJwtToken(Guid userId, string username, string email)

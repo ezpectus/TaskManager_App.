@@ -19,8 +19,8 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      const token = await authService.login({ email, password })
-      login(token)
+      const res = await authService.login({ email, password })
+      login(res.token)
       showToast('Welcome back!', 'success')
       navigate('/')
     } catch {

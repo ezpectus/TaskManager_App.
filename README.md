@@ -10,29 +10,41 @@ The project was created as a practical sandbox for testing backend architecture,
 
 ### Backend
 - Clean Architecture (Domain, Application, Infrastructure, API, Tests)
-- JWT authentication with BCrypt password hashing
+- JWT authentication with BCrypt password hashing and refresh tokens
+- Password change endpoint with current password verification
+- User profile update (username, email)
 - Domain-Driven Design: entity factory methods, encapsulated state transitions, soft delete
 - Unit of Work pattern with `IUnitOfWork`
 - EF Core with PostgreSQL, Fluent API configuration
 - Soft delete with query filters (TaskItem, Comment, Subtask)
 - Optimistic concurrency control (RowVersion on TaskItem)
 - Pagination and filtering for tasks
+- Task assignment to users
+- Activity log endpoint for tracking task changes
 - API versioning (URL segment: `api/v1/...`)
 - Automatic activity logging via SaveChanges interceptor
+- Rate limiting (token bucket, 100 req/min per IP)
+- Response caching on tasks and users endpoints
 - FluentValidation for all DTOs
 - AutoMapper for entity-to-DTO mapping
 - Serilog structured logging
 - Global exception handling middleware
 - Swagger/OpenAPI with XML comments and JWT Bearer scheme
 - CORS and health checks configured
-- Unit tests (xUnit + Moq + AutoMapper): 30+ tests across services and domain entities
+- DB seeding on startup (admin/demo users, roles, sample tasks)
+- Unit tests (xUnit + Moq + AutoMapper): 45+ tests across services and domain entities
 
 ### Frontend
 - React 19 + TypeScript + TailwindCSS + Vite
-- JWT-based authentication with protected routes
-- Dashboard with task grid, search, and create modal
-- Task detail page with inline editing, subtasks, and comments
-- Kanban board with 3 columns (To Do / In Progress / Done)
+- JWT-based authentication with protected routes and refresh token support
+- Dashboard with task grid, search, filter chips, and table/list view toggle
+- Task detail page with inline editing, subtasks, comments, and markdown rendering
+- Kanban board with drag & drop between status columns
+- Analytics page with task statistics and progress bars
+- CSV export for tasks
+- Profile page with edit profile and change password functionality
+- Dark mode with CSS variables and localStorage persistence
+- Toast notifications for all CRUD operations
 - Responsive layout with Lucide icons
 - API proxy to backend during development
 
@@ -55,6 +67,7 @@ The project was created as a practical sandbox for testing backend architecture,
 - Vite 7
 - React Router 7
 - Lucide React (icons)
+- react-markdown (markdown rendering)
 
 ---
 

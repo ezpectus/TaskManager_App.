@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using BCrypt.Net;
+using TaskManager.Application.DTOs.Auth;
 using TaskManager.Application.DTOs.Users;
 using TaskManager.Application.Interfaces;
 using TaskManager.Domain.Entities;
@@ -84,5 +85,32 @@ public class UserService : IUserService
         if (user == null) return false;
 
         return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+    }
+
+    public async Task<bool> ChangePasswordAsync(ChangePasswordRequest request, CancellationToken ct)
+    {
+        var user = await _repo.GetByIdAsync(request.UserId, ct);
+        if (user == null) return false;
+
+        if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
+            return false;
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        await _repo.UpdateAsync(user, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+        return true;
+    }
+
+    public async Task<bool> UpdateProfileAsync(Guid id, UpdateUserRequest dto, CancellationToken ct)
+    {
+        var user = await _repo.GetByIdAsync(id, ct);
+        if (user == null) return false;
+
+        user.Username = dto.Username.Trim();
+        user.Email = dto.Email.Trim();
+
+        await _repo.UpdateAsync(user, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+        return true;
     }
 }

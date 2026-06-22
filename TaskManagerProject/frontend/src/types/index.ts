@@ -77,4 +77,23 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string
+  refreshToken: string
+  expiresAt: string
+  userId: string
+  username: string
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string
+}
+
+export interface ChangePasswordRequest {
+  userId: string
+  currentPassword: string
+  newPassword: string
+}
+
+export interface UpdateUserRequest {
+  username: string
+  email: string
 }

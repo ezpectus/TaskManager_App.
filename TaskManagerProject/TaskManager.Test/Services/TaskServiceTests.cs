@@ -12,6 +12,7 @@ namespace TaskManager.Test.Services;
 public class TaskServiceTests
 {
     private readonly Mock<ITaskRepository> _repoMock;
+    private readonly Mock<IUserRepository> _userRepoMock;
     private readonly Mock<IUnitOfWork> _uowMock;
     private readonly IMapper _mapper;
     private readonly TaskService _service;
@@ -19,9 +20,10 @@ public class TaskServiceTests
     public TaskServiceTests()
     {
         _repoMock = new Mock<ITaskRepository>();
+        _userRepoMock = new Mock<IUserRepository>();
         _uowMock = new Mock<IUnitOfWork>();
         _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>()).CreateMapper();
-        _service = new TaskService(_repoMock.Object, _mapper, _uowMock.Object);
+        _service = new TaskService(_repoMock.Object, _userRepoMock.Object, _mapper, _uowMock.Object);
     }
 
     [Fact]

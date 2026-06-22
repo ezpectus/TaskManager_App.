@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
-import { getAuthToken, clearAuthToken } from '../lib/api'
+import { getAuthToken } from '../lib/api'
+import { authService } from '../services/authService'
 
 interface AuthContextValue {
   isAuthenticated: boolean
@@ -17,7 +18,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = () => {
-    clearAuthToken()
+    authService.logout()
     setIsAuthenticated(false)
   }
 

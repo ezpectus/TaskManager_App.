@@ -25,4 +25,11 @@ public class AuthController : ControllerBase
         var result = await _authService.LoginAsync(request, ct);
         return result == null ? Unauthorized() : Ok(result);
     }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshTokenRequest request, CancellationToken ct)
+    {
+        var result = await _authService.RefreshAsync(request.RefreshToken, ct);
+        return result == null ? Unauthorized() : Ok(result);
+    }
 }

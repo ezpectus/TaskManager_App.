@@ -6,6 +6,7 @@ import { commentService } from '../services/commentService'
 import type { TaskDto, SubtaskDto } from '../types'
 import { useToast } from '../context/ToastContext'
 import ConfirmDialog from '../components/ConfirmDialog'
+import Markdown from '../components/Markdown'
 import { ArrowLeft, Trash2, Save, Plus, X, MessageSquare, ListChecks } from 'lucide-react'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -176,9 +177,11 @@ export default function TaskDetailPage() {
         </div>
 
         {editing ? (
-          <textarea className="input min-h-[120px]" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <textarea className="input min-h-[120px]" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Supports markdown..." />
         ) : (
-          <p className="mb-6 whitespace-pre-wrap text-muted-foreground">{task.description}</p>
+          <div className="mb-6">
+            <Markdown content={task.description} />
+          </div>
         )}
 
         <div className="mb-6 flex gap-2">

@@ -3,13 +3,23 @@ import { userService } from '../services/userService'
 import { taskService } from '../services/taskService'
 import type { UserDto, TaskDto } from '../types'
 import { useToast } from '../context/ToastContext'
-import { User as UserIcon, Mail, CheckSquare, Clock, CheckCircle } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import { User as UserIcon, Mail, CheckSquare, Clock, CheckCircle, Save, KeyRound, X, Edit } from 'lucide-react'
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserDto | null>(null)
   const [tasks, setTasks] = useState<TaskDto[]>([])
   const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [editing, setEditing] = useState(false)
+  const [editUsername, setEditUsername] = useState('')
+  const [editEmail, setEditEmail] = useState('')
+  const [showPasswordForm, setShowPasswordForm] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const { showToast } = useToast()
+  const { logout } = useAuth()
 
   useEffect(() => {
     const fetch = async () => {
@@ -25,6 +35,9 @@ export default function ProfilePage() {
           taskService.getAll(),
         ])
         setUser(userData)
+        setUserId(userId)
+        setEditUsername(userData.username)
+        setEditEmail(userData.email)
         setTasks(taskData.filter((t) => t.userId === userId))
       } catch {
         showToast('Failed to load profile', 'error')
@@ -34,6 +47,40 @@ export default function ProfilePage() {
     }
     fetch()
   }, [])
+
+  const handleSaveProfile = async () => {
+    if (!userId) return
+    try {
+      await userService.updateProfile(userId, { username: editUsername, email: editEmail })
+      showToast('Profile updated', 'success')
+      setEditing(false)
+      setUser((prev) => prev ? { ...prev, username: editUsername, email: editEmail } : prev)
+    } catch {
+      showToast('Failed to update profile', 'error')
+    }
+  }
+
+  const handleChangePassword = async () => {
+    if (!userId) return
+    if (newPassword !== confirmPassword) {
+      showToast('Passwords do not match', 'error')
+      return
+    }
+    if (newPassword.length < 6) {
+      showToast('Password must be at least 6 characters', 'error')
+      return
+    }
+    try {
+      await userService.changePassword(userId, { userId, currentPassword, newPassword })
+      showToast('Password changed successfully', 'success')
+      setShowPasswordForm(false)
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch {
+      showToast('Failed to change password', 'error')
+    }
+  }
 
   if (loading) {
     return (
@@ -69,11 +116,36 @@ export default function ProfilePage() {
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <UserIcon className="h-8 w-8 text-primary" />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold">{user.username}</h1>
-            <p className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Mail size={14} /> {user.email}
-            </p>
+          <div className="flex-1">
+            {editing ? (
+              <div className="space-y-2">
+                <input className="input" value={editUsername} onChange={(e) => setEditUsername(e.target.value)} placeholder="Username" />
+                <input className="input" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} placeholder="Email" type="email" />
+              </div>
+            ) : (
+              <>
+                <h1 className="text-2xl font-bold">{user.username}</h1>
+                <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Mail size={14} /> {user.email}
+                </p>
+              </>
+            )}
+          </div>
+          <div className="flex gap-2">
+            {editing ? (
+              <>
+                <button className="btn-primary" onClick={handleSaveProfile}>
+                  <Save size={18} /> Save
+                </button>
+                <button className="btn-outline" onClick={() => { setEditing(false); setEditUsername(user.username); setEditEmail(user.email) }}>
+                  <X size={18} /> Cancel
+                </button>
+              </>
+            ) : (
+              <button className="btn-outline" onClick={() => setEditing(true)}>
+                <Edit size={18} /> Edit
+              </button>
+            )}
           </div>
         </div>
 
@@ -115,6 +187,47 @@ export default function ProfilePage() {
             ))}
           </div>
         )}
+
+        <div className="mt-6 border-t pt-6">
+          {showPasswordForm ? (
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold">Change Password</h2>
+              <input
+                className="input"
+                type="password"
+                placeholder="Current password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+              <input
+                className="input"
+                type="password"
+                placeholder="New password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <input
+                className="input"
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <div className="flex gap-2">
+                <button className="btn-primary" onClick={handleChangePassword}>
+                  <Save size={18} /> Change Password
+                </button>
+                <button className="btn-outline" onClick={() => { setShowPasswordForm(false); setCurrentPassword(''); setNewPassword(''); setConfirmPassword('') }}>
+                  <X size={18} /> Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button className="btn-outline" onClick={() => setShowPasswordForm(true)}>
+              <KeyRound size={18} /> Change Password
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -32,29 +32,38 @@ The project is now a full-stack application with both backend and frontend:
 
 **Backend:**
 - ASP.NET Core 9 Web API with Clean Architecture
-- JWT authentication with BCrypt password hashing
+- JWT authentication with BCrypt password hashing and refresh tokens
+- Password change and profile update endpoints
 - Domain-Driven Design: entity factory methods, encapsulated state transitions
 - Unit of Work pattern with `IUnitOfWork`
 - EF Core with PostgreSQL, Fluent API configuration
 - Soft delete with query filters (TaskItem, Comment, Subtask)
 - Optimistic concurrency control (RowVersion on TaskItem)
 - Pagination and filtering for tasks
+- Task assignment to users and activity log endpoint
 - API versioning (URL segment: `api/v1/...`)
 - Automatic activity logging via SaveChanges interceptor
+- Rate limiting and response caching
 - FluentValidation for all DTOs
 - AutoMapper for entity-to-DTO mapping
 - Serilog structured logging
 - Global exception handling middleware
 - Swagger/OpenAPI with XML comments and JWT Bearer scheme
 - CORS and health checks
-- Unit tests (xUnit + Moq): 30+ tests
+- DB seeding on startup
+- Unit tests (xUnit + Moq): 45+ tests
 
 **Frontend:**
 - React 19 + TypeScript + TailwindCSS + Vite
-- JWT-based authentication with protected routes
-- Dashboard with task grid, search, and create modal
-- Task detail page with inline editing, subtasks, and comments
-- Kanban board with 3 columns (To Do / In Progress / Done)
+- JWT-based authentication with protected routes and refresh token support
+- Dashboard with task grid, search, filter chips, and table/list view toggle
+- Task detail page with inline editing, subtasks, comments, and markdown rendering
+- Kanban board with drag & drop between status columns
+- Analytics page with task statistics and progress bars
+- CSV export for tasks
+- Profile page with edit profile and change password functionality
+- Dark mode with CSS variables and localStorage persistence
+- Toast notifications for all CRUD operations
 - Responsive layout with Lucide icons
 
 ---
@@ -143,12 +152,19 @@ The following features are now implemented:
 - ~~Soft delete~~ ✅
 - ~~API versioning~~ ✅
 - ~~Unit tests~~ ✅
+- ~~Refresh tokens~~ ✅
+- ~~Password change endpoint~~ ✅
+- ~~User profile update~~ ✅
+- ~~Markdown rendering in descriptions~~ ✅
+- ~~CSV export~~ ✅
+- ~~Analytics page with charts~~ ✅
+- ~~Drag & drop Kanban~~ ✅
+- ~~Docker containerization and CI/CD~~ ✅
 
 Potential future directions:
 - Notifications system (email, in-app)
 - Messaging via RabbitMQ or Kafka
 - Real-time updates with SignalR
-- Docker containerization and CI/CD
 - Mobile application (React Native)
 - Advanced analytics and reporting
 
@@ -187,6 +203,7 @@ This project should be viewed as:
 - Vite 7
 - React Router 7
 - Lucide React (icons)
+- react-markdown (markdown rendering)
 
 ---
 

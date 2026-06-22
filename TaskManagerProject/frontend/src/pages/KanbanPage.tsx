@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { taskService } from '../services/taskService'
 import type { TaskDto, TaskStatus } from '../types'
 import { useToast } from '../context/ToastContext'
-import { Plus, Trello, ChevronRight } from 'lucide-react'
+import { Plus, Trello } from 'lucide-react'
 
 const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: 'Todo', label: 'To Do', color: 'border-t-blue-500' },
@@ -20,10 +20,12 @@ const PRIORITY_BADGE: Record<string, string> = {
 export default function KanbanPage() {
   const [tasks, setTasks] = useState<TaskDto[]>([])
   const [loading, setLoading] = useState(true)
+  const [draggedId, setDraggedId] = useState<string | null>(null)
+  const [dragOverCol, setDragOverCol] = useState<TaskStatus | null>(null)
   const navigate = useNavigate()
   const { showToast } = useToast()
 
-  const handleStatusChange = async (taskId: string, newStatus: TaskStatus) => {
+  const handleStatusChange = useCallback(async (taskId: string, newStatus: TaskStatus) => {
     try {
       await taskService.updateStatus(taskId, newStatus)
       setTasks((prev) => prev.map((t) => t.id === taskId ? { ...t, status: newStatus } : t))
@@ -31,6 +33,31 @@ export default function KanbanPage() {
     } catch {
       showToast('Failed to update status', 'error')
     }
+  }, [showToast])
+
+  const handleDragStart = (e: React.DragEvent, taskId: string) => {
+    setDraggedId(taskId)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleDragOver = (e: React.DragEvent, col: TaskStatus) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDragOverCol(col)
+  }
+
+  const handleDrop = (e: React.DragEvent, col: TaskStatus) => {
+    e.preventDefault()
+    setDragOverCol(null)
+    if (draggedId) {
+      handleStatusChange(draggedId, col)
+      setDraggedId(null)
+    }
+  }
+
+  const handleDragEnd = () => {
+    setDraggedId(null)
+    setDragOverCol(null)
   }
 
   useEffect(() => {
@@ -77,7 +104,13 @@ export default function KanbanPage() {
         {COLUMNS.map((col) => {
           const colTasks = tasks.filter((t) => t.status === col.status)
           return (
-            <div key={col.status} className={`card border-t-4 ${col.color} min-h-[400px] p-4`}>
+            <div
+              key={col.status}
+              className={`card border-t-4 ${col.color} min-h-[400px] p-4 transition-colors ${dragOverCol === col.status ? 'ring-2 ring-primary' : ''}`}
+              onDragOver={(e) => handleDragOver(e, col.status)}
+              onDrop={(e) => handleDrop(e, col.status)}
+              onDragLeave={() => setDragOverCol(null)}
+            >
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Trello className="h-4 w-4 text-muted-foreground" />
@@ -89,7 +122,10 @@ export default function KanbanPage() {
                 {colTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="card cursor-pointer p-3 transition-shadow hover:shadow-md"
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, task.id)}
+                    onDragEnd={handleDragEnd}
+                    className={`card cursor-pointer p-3 transition-all hover:shadow-md ${draggedId === task.id ? 'opacity-40' : ''}`}
                     onClick={() => navigate(`/tasks/${task.id}`)}
                   >
                     <h3 className="mb-1 font-medium">{task.title}</h3>

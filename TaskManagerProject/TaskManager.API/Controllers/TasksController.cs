@@ -16,10 +16,12 @@ namespace TaskManager.API.Controllers;
 public class TasksController : ControllerBase
 {
     private readonly ITaskService _service;
+    private readonly IActivityLogService _activityLogService;
 
-    public TasksController(ITaskService service)
+    public TasksController(ITaskService service, IActivityLogService activityLogService)
     {
         _service = service;
+        _activityLogService = activityLogService;
     }
 
     [HttpPost]
@@ -78,5 +80,19 @@ public class TasksController : ControllerBase
     {
         var ok = await _service.DeleteAsync(id, ct);
         return ok ? NoContent() : NotFound();
+    }
+
+    [HttpPost("{id:guid}/assign/{userId:guid}")]
+    public async Task<IActionResult> Assign(Guid id, Guid userId, CancellationToken ct)
+    {
+        var ok = await _service.AssignAsync(id, userId, ct);
+        return ok ? NoContent() : NotFound();
+    }
+
+    [HttpGet("{id:guid}/activity")]
+    public async Task<IActionResult> GetActivityLog(Guid id, CancellationToken ct)
+    {
+        var logs = await _activityLogService.GetByTaskIdAsync(id, ct);
+        return Ok(logs);
     }
 }

@@ -13,12 +13,14 @@ namespace TaskManager.Application.Services;
 public class TaskService : ITaskService
 {
     private readonly ITaskRepository _repo;
+    private readonly IUserRepository _userRepo;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public TaskService(ITaskRepository repo, IMapper mapper, IUnitOfWork unitOfWork)
+    public TaskService(ITaskRepository repo, IUserRepository userRepo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _repo = repo;
+        _userRepo = userRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
@@ -82,6 +84,20 @@ public class TaskService : ITaskService
         if (task == null) return false;
 
         task.SoftDelete();
+        await _repo.UpdateAsync(task, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
+        return true;
+    }
+
+    public async Task<bool> AssignAsync(Guid taskId, Guid userId, CancellationToken ct)
+    {
+        var task = await _repo.GetByIdAsync(taskId, ct);
+        if (task == null) return false;
+
+        var user = await _userRepo.GetByIdAsync(userId, ct);
+        if (user == null) return false;
+
+        task.AssignTo(user);
         await _repo.UpdateAsync(task, ct);
         await _unitOfWork.SaveChangesAsync(ct);
         return true;

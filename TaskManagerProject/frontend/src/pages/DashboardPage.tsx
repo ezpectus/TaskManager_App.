@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { taskService } from '../services/taskService'
-import type { TaskDto, TaskStatus } from '../types'
+import type { TaskDto, TaskStatus, TaskPriority } from '../types'
 import { useToast } from '../context/ToastContext'
 import ConfirmDialog from '../components/ConfirmDialog'
 import { useDebounce } from '../hooks/useDebounce'
-import { Plus, Search, Trash2, Edit, ClipboardList } from 'lucide-react'
+import { exportTasksToCSV } from '../utils/csvExport'
+import { Plus, Search, Trash2, Edit, ClipboardList, LayoutGrid, Table, X, Download } from 'lucide-react'
 
 const STATUS_LABELS: Record<TaskStatus, string> = {
   Todo: 'To Do',
@@ -31,6 +32,9 @@ export default function DashboardPage() {
   const [search, setSearch] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<TaskDto | null>(null)
+  const [view, setView] = useState<'grid' | 'table'>('grid')
+  const [statusFilter, setStatusFilter] = useState<TaskStatus | null>(null)
+  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | null>(null)
   const navigate = useNavigate()
   const { showToast } = useToast()
 
@@ -54,9 +58,16 @@ export default function DashboardPage() {
 
   const filtered = useMemo(() => tasks.filter(
     (t) =>
-      t.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-      t.description.toLowerCase().includes(debouncedSearch.toLowerCase()),
-  ), [tasks, debouncedSearch])
+      (t.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      t.description.toLowerCase().includes(debouncedSearch.toLowerCase())) &&
+      (statusFilter === null || t.status === statusFilter) &&
+      (priorityFilter === null || t.priority === priorityFilter),
+  ), [tasks, debouncedSearch, statusFilter, priorityFilter])
+
+  const activeFilters = [
+    ...(statusFilter ? [{ type: 'status', label: STATUS_LABELS[statusFilter], clear: () => setStatusFilter(null) }] : []),
+    ...(priorityFilter ? [{ type: 'priority', label: priorityFilter, clear: () => setPriorityFilter(null) }] : []),
+  ]
 
   const handleDelete = async (id: string) => {
     try {
@@ -75,16 +86,68 @@ export default function DashboardPage() {
         <button className="btn-primary" onClick={() => setShowCreate(true)}>
           <Plus size={18} /> New Task
         </button>
+        <button className="btn-outline" onClick={() => exportTasksToCSV(filtered)} disabled={filtered.length === 0}>
+          <Download size={18} /> Export CSV
+        </button>
       </div>
 
-      <div className="mb-4 relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-        <input
-          className="input pl-10"
-          placeholder="Search tasks..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="mb-4 flex items-center gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <input
+            className="input pl-10"
+            placeholder="Search tasks..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-1 rounded-lg border p-1">
+          <button
+            className={`rounded p-1.5 ${view === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}
+            onClick={() => setView('grid')}
+            title="Grid view"
+          >
+            <LayoutGrid size={16} />
+          </button>
+          <button
+            className={`rounded p-1.5 ${view === 'table' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}
+            onClick={() => setView('table')}
+            title="Table view"
+          >
+            <Table size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="text-sm text-muted-foreground">Quick filters:</span>
+        {(['Todo', 'InProgress', 'Done'] as TaskStatus[]).map((s) => (
+          <button
+            key={s}
+            className={`badge cursor-pointer ${statusFilter === s ? STATUS_COLORS[s] : 'bg-secondary text-secondary-foreground hover:bg-accent'}`}
+            onClick={() => setStatusFilter(statusFilter === s ? null : s)}
+          >
+            {STATUS_LABELS[s]}
+          </button>
+        ))}
+        <span className="mx-1 text-muted-foreground">|</span>
+        {(['Low', 'Medium', 'High'] as TaskPriority[]).map((p) => (
+          <button
+            key={p}
+            className={`badge cursor-pointer ${priorityFilter === p ? PRIORITY_COLORS[p] : 'bg-secondary text-secondary-foreground hover:bg-accent'}`}
+            onClick={() => setPriorityFilter(priorityFilter === p ? null : p)}
+          >
+            {p}
+          </button>
+        ))}
+        {activeFilters.length > 0 && (
+          <button
+            className="ml-2 flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => { setStatusFilter(null); setPriorityFilter(null) }}
+          >
+            <X size={12} /> Clear all
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -109,7 +172,7 @@ export default function DashboardPage() {
             {search ? 'Try a different search term.' : 'Create a task to get started.'}
           </p>
         </div>
-      ) : (
+      ) : view === 'grid' ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((task) => (
             <div
@@ -153,6 +216,61 @@ export default function DashboardPage() {
               </div>
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="card overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="border-b bg-secondary/50">
+              <tr>
+                <th className="px-4 py-3 text-left font-semibold">Title</th>
+                <th className="px-4 py-3 text-left font-semibold">Status</th>
+                <th className="px-4 py-3 text-left font-semibold">Priority</th>
+                <th className="px-4 py-3 text-right font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((task) => (
+                <tr
+                  key={task.id}
+                  className="cursor-pointer border-b last:border-0 hover:bg-accent/50"
+                  onClick={() => navigate(`/tasks/${task.id}`)}
+                >
+                  <td className="px-4 py-3">
+                    <div className="font-medium">{task.title}</div>
+                    <div className="line-clamp-1 text-xs text-muted-foreground">{task.description}</div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`badge ${STATUS_COLORS[task.status]}`}>{STATUS_LABELS[task.status]}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`badge ${PRIORITY_COLORS[task.priority]}`}>{task.priority}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <button
+                        className="rounded p-1 hover:bg-accent"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          navigate(`/tasks/${task.id}?edit=true`)
+                        }}
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        className="rounded p-1 hover:bg-accent"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setDeleteTarget(task)
+                        }}
+                      >
+                        <Trash2 size={16} className="text-destructive" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
