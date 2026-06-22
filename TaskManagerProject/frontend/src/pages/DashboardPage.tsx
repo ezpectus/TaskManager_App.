@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { taskService } from '../services/taskService'
 import type { TaskDto, TaskStatus } from '../types'
-import { Plus, Search, Trash2, Edit } from 'lucide-react'
+import { useToast } from '../context/ToastContext'
+import { Plus, Search, Trash2, Edit, ClipboardList } from 'lucide-react'
 
 const STATUS_LABELS: Record<TaskStatus, string> = {
   Todo: 'To Do',
@@ -11,15 +12,15 @@ const STATUS_LABELS: Record<TaskStatus, string> = {
 }
 
 const STATUS_COLORS: Record<TaskStatus, string> = {
-  Todo: 'bg-blue-100 text-blue-800',
-  InProgress: 'bg-yellow-100 text-yellow-800',
-  Done: 'bg-green-100 text-green-800',
+  Todo: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+  InProgress: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+  Done: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
-  Low: 'bg-gray-100 text-gray-700',
-  Medium: 'bg-orange-100 text-orange-800',
-  High: 'bg-red-100 text-red-800',
+  Low: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  Medium: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+  High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 }
 
 export default function DashboardPage() {
@@ -28,6 +29,7 @@ export default function DashboardPage() {
   const [search, setSearch] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const navigate = useNavigate()
+  const { showToast } = useToast()
 
   const fetchTasks = async () => {
     setLoading(true)
@@ -35,7 +37,7 @@ export default function DashboardPage() {
       const data = await taskService.getAll()
       setTasks(data)
     } catch {
-      // handle error
+      showToast('Failed to load tasks', 'error')
     } finally {
       setLoading(false)
     }
@@ -53,8 +55,13 @@ export default function DashboardPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this task?')) return
-    await taskService.delete(id)
-    fetchTasks()
+    try {
+      await taskService.delete(id)
+      showToast('Task deleted', 'success')
+      fetchTasks()
+    } catch {
+      showToast('Failed to delete task', 'error')
+    }
   }
 
   return (
@@ -77,10 +84,26 @@ export default function DashboardPage() {
       </div>
 
       {loading ? (
-        <p className="text-muted-foreground">Loading...</p>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="card p-4">
+              <div className="skeleton mb-3 h-5 w-3/4" />
+              <div className="skeleton mb-2 h-4 w-full" />
+              <div className="skeleton mb-4 h-4 w-2/3" />
+              <div className="flex gap-2">
+                <div className="skeleton h-5 w-16 rounded-full" />
+                <div className="skeleton h-5 w-16 rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
         <div className="card p-12 text-center">
-          <p className="text-muted-foreground">No tasks found. Create one to get started.</p>
+          <ClipboardList className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+          <p className="mb-2 text-lg font-medium">No tasks found</p>
+          <p className="text-muted-foreground">
+            {search ? 'Try a different search term.' : 'Create a task to get started.'}
+          </p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -140,6 +163,7 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
   const [priority, setPriority] = useState('Medium')
   const [deadline, setDeadline] = useState('')
   const [loading, setLoading] = useState(false)
+  const { showToast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -151,9 +175,10 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
         priority: priority as any,
         deadline: deadline || new Date().toISOString(),
       })
+      showToast('Task created successfully', 'success')
       onClose()
     } catch {
-      // handle error
+      showToast('Failed to create task', 'error')
     } finally {
       setLoading(false)
     }

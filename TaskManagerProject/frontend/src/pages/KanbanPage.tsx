@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { taskService } from '../services/taskService'
 import type { TaskDto, TaskStatus } from '../types'
-import { Plus } from 'lucide-react'
+import { useToast } from '../context/ToastContext'
+import { Plus, Trello } from 'lucide-react'
 
 const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: 'Todo', label: 'To Do', color: 'border-t-blue-500' },
@@ -11,15 +12,16 @@ const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
 ]
 
 const PRIORITY_BADGE: Record<string, string> = {
-  Low: 'bg-gray-100 text-gray-700',
-  Medium: 'bg-orange-100 text-orange-800',
-  High: 'bg-red-100 text-red-800',
+  Low: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+  Medium: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+  High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 }
 
 export default function KanbanPage() {
   const [tasks, setTasks] = useState<TaskDto[]>([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const { showToast } = useToast()
 
   useEffect(() => {
     const fetch = async () => {
@@ -27,7 +29,7 @@ export default function KanbanPage() {
         const data = await taskService.getAll()
         setTasks(data)
       } catch {
-        // handle error
+        showToast('Failed to load tasks', 'error')
       } finally {
         setLoading(false)
       }
@@ -35,7 +37,22 @@ export default function KanbanPage() {
     fetch()
   }, [])
 
-  if (loading) return <div className="p-6 text-muted-foreground">Loading...</div>
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-7xl p-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="card min-h-[400px] border-t-4 border-t-muted p-4">
+              <div className="skeleton mb-4 h-6 w-24" />
+              {[1, 2].map((j) => (
+                <div key={j} className="skeleton mb-3 h-20 w-full" />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-7xl p-6">
@@ -52,7 +69,10 @@ export default function KanbanPage() {
           return (
             <div key={col.status} className={`card border-t-4 ${col.color} min-h-[400px] p-4`}>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-semibold">{col.label}</h2>
+                <div className="flex items-center gap-2">
+                  <Trello className="h-4 w-4 text-muted-foreground" />
+                  <h2 className="font-semibold">{col.label}</h2>
+                </div>
                 <span className="badge bg-secondary text-secondary-foreground">{colTasks.length}</span>
               </div>
               <div className="space-y-3">

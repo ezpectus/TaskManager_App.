@@ -23,10 +23,21 @@ export interface SubtaskDto {
   taskId: string
 }
 
+export interface CreateSubtaskRequest {
+  title: string
+  taskId: string
+}
+
 export interface CommentDto {
   id: string
   content: string
   createdAt: string
+  taskId: string
+  userId?: string | null
+}
+
+export interface CreateCommentRequest {
+  content: string
   taskId: string
   userId?: string | null
 }

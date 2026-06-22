@@ -1,0 +1,19 @@
+# Backend Dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY TaskManagerProject/TaskManager.Domain/TaskManager.Domain.csproj TaskManager.Domain/
+COPY TaskManagerProject/TaskManager.Application/TaskManager.Application.csproj TaskManager.Application/
+COPY TaskManagerProject/TaskManager.Infrastructure/TaskManager.Infrastructure.csproj TaskManager.Infrastructure/
+COPY TaskManagerProject/TaskManager.API/TaskManager.API.csproj TaskManager.API/
+RUN dotnet restore TaskManager.API/TaskManager.API.csproj
+
+COPY TaskManagerProject/ .
+RUN dotnet publish TaskManager.API/TaskManager.API.csproj -c Release -o /app/publish --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+ENV ASPNETCORE_URLS=http://+:5000
+EXPOSE 5000
+ENTRYPOINT ["dotnet", "TaskManager.API.dll"]

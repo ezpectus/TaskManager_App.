@@ -1,0 +1,51 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  backend:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore TaskManagerProject/TaskManager.sln
+
+      - name: Build
+        run: dotnet build TaskManagerProject/TaskManager.sln --no-restore
+
+      - name: Test
+        run: dotnet test TaskManagerProject/TaskManager.sln --no-build --verbosity normal
+
+  frontend:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install
+        run: npm ci || npm install
+        working-directory: TaskManagerProject/frontend
+
+      - name: Type check
+        run: npx tsc --noEmit
+        working-directory: TaskManagerProject/frontend
+
+      - name: Build
+        run: npm run build
+        working-directory: TaskManagerProject/frontend

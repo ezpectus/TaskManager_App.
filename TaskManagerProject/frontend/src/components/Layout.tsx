@@ -1,10 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { LayoutDashboard, Trello, LogOut, CheckSquare } from 'lucide-react'
+import { useTheme } from '../context/ThemeContext'
+import { LayoutDashboard, Trello, LogOut, CheckSquare, Moon, Sun } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -32,7 +34,10 @@ export default function Layout({ children }: { children: ReactNode }) {
             <NavLink to="/kanban" className={linkClass}>
               <Trello size={18} /> Kanban
             </NavLink>
-            <button onClick={handleLogout} className="btn-outline ml-2">
+            <button onClick={toggleTheme} className="btn-outline ml-2" title="Toggle theme">
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button onClick={handleLogout} className="btn-outline">
               <LogOut size={18} /> Logout
             </button>
           </nav>

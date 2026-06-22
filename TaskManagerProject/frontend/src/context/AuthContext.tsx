@@ -3,6 +3,7 @@ import { getAuthToken, clearAuthToken } from '../lib/api'
 
 interface AuthContextValue {
   isAuthenticated: boolean
+  login: (token: string) => void
   logout: () => void
 }
 
@@ -11,13 +12,17 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(!!getAuthToken())
 
+  const login = (_token: string) => {
+    setIsAuthenticated(true)
+  }
+
   const logout = () => {
     clearAuthToken()
     setIsAuthenticated(false)
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
