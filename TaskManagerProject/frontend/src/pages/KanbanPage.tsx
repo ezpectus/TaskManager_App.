@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { taskService } from '../services/taskService'
 import type { TaskDto, TaskStatus } from '../types'
 import { useToast } from '../context/ToastContext'
-import { Plus, Trello } from 'lucide-react'
+import { Plus, Trello, ChevronRight } from 'lucide-react'
 
 const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: 'Todo', label: 'To Do', color: 'border-t-blue-500' },
@@ -22,6 +22,16 @@ export default function KanbanPage() {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
   const { showToast } = useToast()
+
+  const handleStatusChange = async (taskId: string, newStatus: TaskStatus) => {
+    try {
+      await taskService.updateStatus(taskId, newStatus)
+      setTasks((prev) => prev.map((t) => t.id === taskId ? { ...t, status: newStatus } : t))
+      showToast('Task status updated', 'success')
+    } catch {
+      showToast('Failed to update status', 'error')
+    }
+  }
 
   useEffect(() => {
     const fetch = async () => {
@@ -86,11 +96,23 @@ export default function KanbanPage() {
                     <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">{task.description}</p>
                     <div className="flex items-center justify-between">
                       <span className={`badge ${PRIORITY_BADGE[task.priority]}`}>{task.priority}</span>
-                      {task.subtasks.length > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                          {task.subtasks.filter((s) => s.isCompleted).length}/{task.subtasks.length} subtasks
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {task.subtasks.length > 0 && (
+                          <span className="text-xs text-muted-foreground">
+                            {task.subtasks.filter((s) => s.isCompleted).length}/{task.subtasks.length}
+                          </span>
+                        )}
+                        <select
+                          className="rounded border bg-transparent px-1 py-0.5 text-xs"
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatus)}
+                          value={task.status}
+                        >
+                          <option value="Todo">Todo</option>
+                          <option value="InProgress">In Progress</option>
+                          <option value="Done">Done</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 ))}

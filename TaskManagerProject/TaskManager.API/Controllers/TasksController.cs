@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskManager.Application.DTOs.Tasks;
 using TaskManager.Application.Interfaces;
 using TaskManager.Domain.Enums;
@@ -11,6 +12,7 @@ namespace TaskManager.API.Controllers;
 [Route("api/v{version:apiVersion}/tasks")]
 [ApiVersion("1.0")]
 [Authorize]
+[EnableRateLimiting("api")]
 public class TasksController : ControllerBase
 {
     private readonly ITaskService _service;
@@ -28,6 +30,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ResponseCache(Duration = 30, VaryByQueryKeys = new[] { "id" })]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
         var task = await _service.GetByIdAsync(id, ct);
@@ -35,6 +38,7 @@ public class TasksController : ControllerBase
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 30, VaryByQueryKeys = new[] { "page", "pageSize", "status", "priority", "userId", "searchTerm" })]
     public async Task<IActionResult> GetAll(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,

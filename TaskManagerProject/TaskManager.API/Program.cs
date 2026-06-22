@@ -13,7 +13,11 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using TaskManager.Infrastructure.DepenInjection;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using TaskManager.Infrastucture.DepenInjection;
+using TaskManager.Infrastucture.Persistence;
+using TaskManager.Infrastucture.Persistence.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -120,6 +124,22 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHealthChecks();
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("api", context =>
+        RateLimitPartition.GetTokenBucketLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            _ => new TokenBucketRateLimiterOptions
+            {
+                TokenLimit = 100,
+                TokensPerPeriod = 100,
+                ReplenishmentPeriod = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+});
+
+builder.Services.AddResponseCaching();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -160,9 +180,24 @@ app.UseExceptionHandler(appBuilder =>
 });
 
 app.UseCors();
+app.UseResponseCaching();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        await DbSeeder.SeedAsync(db);
+    }
+    catch (Exception ex)
+    {
+        Log.Logger.Error(ex, "An error occurred while seeding the database");
+    }
+}
 
 app.Run();

@@ -5,6 +5,7 @@ import { subtaskService } from '../services/subtaskService'
 import { commentService } from '../services/commentService'
 import type { TaskDto, SubtaskDto } from '../types'
 import { useToast } from '../context/ToastContext'
+import ConfirmDialog from '../components/ConfirmDialog'
 import { ArrowLeft, Trash2, Save, Plus, X, MessageSquare, ListChecks } from 'lucide-react'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -30,6 +31,7 @@ export default function TaskDetailPage() {
   const [description, setDescription] = useState('')
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('')
   const [newComment, setNewComment] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const fetchTask = async () => {
     if (!id) return
@@ -62,7 +64,7 @@ export default function TaskDetailPage() {
   }
 
   const handleDelete = async () => {
-    if (!id || !confirm('Delete this task?')) return
+    if (!id) return
     try {
       await taskService.delete(id)
       showToast('Task deleted', 'success')
@@ -167,7 +169,7 @@ export default function TaskDetailPage() {
             ) : (
               <button className="btn-outline" onClick={() => setEditing(true)}>Edit</button>
             )}
-            <button className="btn-destructive" onClick={handleDelete}>
+            <button className="btn-destructive" onClick={() => setShowDeleteConfirm(true)}>
               <Trash2 size={18} /> Delete
             </button>
           </div>
@@ -277,6 +279,18 @@ export default function TaskDetailPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Delete task"
+        message={`Are you sure you want to delete "${task.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={() => {
+          setShowDeleteConfirm(false)
+          handleDelete()
+        }}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   )
 }

@@ -42,6 +42,12 @@ export const taskService = {
       body: JSON.stringify(data),
     }),
 
+  updateStatus: (id: string, status: TaskStatus) =>
+    apiFetch<void>(`/tasks/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    }),
+
   delete: (id: string) =>
     apiFetch<void>(`/tasks/${id}`, {
       method: 'DELETE',

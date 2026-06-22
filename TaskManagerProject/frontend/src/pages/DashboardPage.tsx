@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { taskService } from '../services/taskService'
 import type { TaskDto, TaskStatus } from '../types'
 import { useToast } from '../context/ToastContext'
+import ConfirmDialog from '../components/ConfirmDialog'
+import { useDebounce } from '../hooks/useDebounce'
 import { Plus, Search, Trash2, Edit, ClipboardList } from 'lucide-react'
 
 const STATUS_LABELS: Record<TaskStatus, string> = {
@@ -28,6 +30,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [showCreate, setShowCreate] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<TaskDto | null>(null)
   const navigate = useNavigate()
   const { showToast } = useToast()
 
@@ -47,14 +50,15 @@ export default function DashboardPage() {
     fetchTasks()
   }, [])
 
-  const filtered = tasks.filter(
+  const debouncedSearch = useDebounce(search, 300)
+
+  const filtered = useMemo(() => tasks.filter(
     (t) =>
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.description.toLowerCase().includes(search.toLowerCase()),
-  )
+      t.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      t.description.toLowerCase().includes(debouncedSearch.toLowerCase()),
+  ), [tasks, debouncedSearch])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this task?')) return
     try {
       await taskService.delete(id)
       showToast('Task deleted', 'success')
@@ -129,7 +133,7 @@ export default function DashboardPage() {
                     className="rounded p-1 hover:bg-accent"
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleDelete(task.id)
+                      setDeleteTarget(task)
                     }}
                   >
                     <Trash2 size={16} className="text-destructive" />
@@ -153,6 +157,18 @@ export default function DashboardPage() {
       )}
 
       {showCreate && <CreateTaskModal onClose={() => { setShowCreate(false); fetchTasks() }} />}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete task"
+        message={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (deleteTarget) handleDelete(deleteTarget.id)
+          setDeleteTarget(null)
+        }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   )
 }

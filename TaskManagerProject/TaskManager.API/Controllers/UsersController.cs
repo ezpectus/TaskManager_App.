@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskManager.Application.DTOs.Users;
 using TaskManager.Application.Interfaces;
 
@@ -10,6 +11,7 @@ namespace TaskManager.API.Controllers;
 [Route("api/v{version:apiVersion}/users")]
 [ApiVersion("1.0")]
 [Authorize]
+[EnableRateLimiting("api")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _service;
@@ -20,10 +22,12 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [ResponseCache(Duration = 60)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
         => Ok(await _service.GetAllAsync(ct));
 
     [HttpGet("{id:guid}")]
+    [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "id" })]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
         var user = await _service.GetByIdAsync(id, ct);
