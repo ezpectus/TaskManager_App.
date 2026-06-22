@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using TaskManager.Domain.Entities;
+using TaskManager.Infrastructure.Persistence.Contexts;
 
 namespace TaskManager.Infrastructure.Persistence.Interceptors;
 
@@ -36,7 +37,10 @@ public class ActivityLogInterceptor : SaveChangesInterceptor
                 }
             };
 
-            context.ActivityLogs.Add(log);
+            if (context is ApplicationDbContext appContext)
+            {
+                appContext.ActivityLogs.Add(log);
+            }
         }
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);

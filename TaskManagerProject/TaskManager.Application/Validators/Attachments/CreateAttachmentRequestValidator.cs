@@ -1,4 +1,5 @@
 using FluentValidation;
+using TaskManager.Application.DTOs.Attachments;
 
 namespace TaskManager.Application.Validators.Attachments;
 

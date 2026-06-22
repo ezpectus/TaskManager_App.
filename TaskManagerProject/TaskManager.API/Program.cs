@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -30,12 +31,10 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-builder.Services.AddControllers()
-    .AddFluentValidation(fv =>
-    {
-        fv.RegisterValidatorsFromAssemblyContaining<TaskManager.Application.Services.TaskService>();
-        fv.ImplicitlyValidateChildProperties = true;
-    });
+builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<TaskManager.Application.Services.TaskService>();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -43,7 +42,8 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
     options.ApiVersionReader = new UrlSegmentApiVersionReader();
-}).AddApiExplorer(options =>
+})
+.AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";
     options.SubstituteApiVersionInUrl = true;

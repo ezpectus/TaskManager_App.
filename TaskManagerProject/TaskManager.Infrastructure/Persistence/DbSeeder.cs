@@ -66,8 +66,8 @@ public static class DbSeeder
         tasks[4].AssignTo(demoUser);
         tasks[5].AssignTo(admin);
 
-        tasks[1].ChangeStatus(TaskStatus.InProgress);
-        tasks[2].ChangeStatus(TaskStatus.Done);
+        tasks[1].ChangeStatus(Domain.Enums.TaskStatus.InProgress);
+        tasks[2].ChangeStatus(Domain.Enums.TaskStatus.Done);
 
         await context.Tasks.AddRangeAsync(tasks);
 

@@ -1,5 +1,6 @@
 using AutoMapper;
 using Moq;
+using TaskManager.Application.DTOs.Common;
 using TaskManager.Application.DTOs.Tasks;
 using TaskManager.Application.Interfaces;
 using TaskManager.Application.Services;
@@ -44,7 +45,7 @@ public class TasksControllerTests
             Id = Guid.NewGuid(),
             Title = "Test",
             Description = "Desc",
-            Status = TaskStatus.Todo,
+            Status = TaskManager.Domain.Enums.TaskStatus.Todo,
             Priority = TaskPriority.Medium,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -134,7 +135,7 @@ public class TasksControllerTests
         {
             Items = new List<TaskDto>
             {
-                new() { Id = Guid.NewGuid(), Title = "T1", Description = "", Status = TaskStatus.Todo, Priority = TaskPriority.Medium, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Subtasks = [], Comments = [] },
+                new() { Id = Guid.NewGuid(), Title = "T1", Description = "", Status = TaskManager.Domain.Enums.TaskStatus.Todo, Priority = TaskPriority.Medium, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Subtasks = [], Comments = [] },
             }.AsReadOnly(),
             TotalCount = 1,
             Page = 1,
@@ -144,7 +145,7 @@ public class TasksControllerTests
         _serviceMock.Setup(s => s.GetPagedAsync(It.IsAny<TaskFilterRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(paged);
 
-        var result = await _controller.GetAll(page: 1, pageSize: 20, status: TaskStatus.Todo, priority: null, userId: null, searchTerm: null, ct: CancellationToken.None);
+        var result = await _controller.GetAll(page: 1, pageSize: 20, status: TaskManager.Domain.Enums.TaskStatus.Todo, priority: null, userId: null, searchTerm: null, ct: CancellationToken.None);
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         var returned = Assert.IsType<PagedResult<TaskDto>>(okResult.Value);
@@ -156,8 +157,8 @@ public class TasksControllerTests
     {
         var tasks = new List<TaskDto>
         {
-            new() { Id = Guid.NewGuid(), Title = "T1", Description = "", Status = TaskStatus.Todo, Priority = TaskPriority.Medium, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Subtasks = [], Comments = [] },
-            new() { Id = Guid.NewGuid(), Title = "T2", Description = "", Status = TaskStatus.Done, Priority = TaskPriority.High, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Subtasks = [], Comments = [] },
+            new() { Id = Guid.NewGuid(), Title = "T1", Description = "", Status = TaskManager.Domain.Enums.TaskStatus.Todo, Priority = TaskPriority.Medium, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Subtasks = [], Comments = [] },
+            new() { Id = Guid.NewGuid(), Title = "T2", Description = "", Status = TaskManager.Domain.Enums.TaskStatus.Done, Priority = TaskPriority.High, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Subtasks = [], Comments = [] },
         };
 
         _serviceMock.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>()))

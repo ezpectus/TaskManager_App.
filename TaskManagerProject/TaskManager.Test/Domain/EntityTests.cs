@@ -13,7 +13,7 @@ public class TaskItemTests
         Assert.NotEqual(Guid.Empty, task.Id);
         Assert.Equal("Title", task.Title);
         Assert.Equal("Desc", task.Description);
-        Assert.Equal(TaskStatus.Todo, task.Status);
+        Assert.Equal(TaskManager.Domain.Enums.TaskStatus.Todo, task.Status);
         Assert.Equal(TaskPriority.High, task.Priority);
         Assert.False(task.IsDeleted);
     }
@@ -35,9 +35,9 @@ public class TaskItemTests
     {
         var task = TaskItem.Create("T", "D", TaskPriority.Medium);
 
-        task.ChangeStatus(TaskStatus.InProgress);
+        task.ChangeStatus(TaskManager.Domain.Enums.TaskStatus.InProgress);
 
-        Assert.Equal(TaskStatus.InProgress, task.Status);
+        Assert.Equal(TaskManager.Domain.Enums.TaskStatus.InProgress, task.Status);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class TaskItemTests
         var task = TaskItem.Create("T", "D", TaskPriority.Medium);
         task.MarkAsCompleted();
 
-        Assert.Throws<InvalidOperationException>(() => task.ChangeStatus(TaskStatus.Todo));
+        Assert.Throws<InvalidOperationException>(() => task.ChangeStatus(TaskManager.Domain.Enums.TaskStatus.Todo));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class TaskItemTests
 
         task.MarkAsCompleted();
 
-        Assert.Equal(TaskStatus.Done, task.Status);
+        Assert.Equal(TaskManager.Domain.Enums.TaskStatus.Done, task.Status);
     }
 
     [Fact]

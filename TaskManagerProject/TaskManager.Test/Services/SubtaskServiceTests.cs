@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TaskManager.Application.DTOs.Subtasks;
 using TaskManager.Application.Mapping;
@@ -19,7 +20,7 @@ public class SubtaskServiceTests
     {
         _repoMock = new Mock<ISubtaskRepository>();
         _uowMock = new Mock<IUnitOfWork>();
-        _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>()).CreateMapper();
+        _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), NullLoggerFactory.Instance).CreateMapper();
         _service = new SubtaskService(_repoMock.Object, _mapper, _uowMock.Object);
     }
 

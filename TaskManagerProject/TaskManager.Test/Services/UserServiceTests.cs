@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TaskManager.Application.DTOs.Auth;
 using TaskManager.Application.DTOs.Users;
@@ -20,7 +21,7 @@ public class UserServiceTests
     {
         _repoMock = new Mock<IUserRepository>();
         _uowMock = new Mock<IUnitOfWork>();
-        _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>()).CreateMapper();
+        _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), NullLoggerFactory.Instance).CreateMapper();
         _service = new UserService(_repoMock.Object, _uowMock.Object, _mapper);
     }
 

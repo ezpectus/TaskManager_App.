@@ -1,26 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.Tasks;
 
+namespace TaskManager.Application.Sorting;
 
-
-using static TaskManager.Application.DTOs.TaskDtos;
-
-namespace TaskManager.Application.Sorting
+public static class TaskSorter
 {
-    // Простая сортировка задач по приоритету
-    public static class TaskSorter
+    public static IEnumerable<TaskDto> SortByPriority(IEnumerable<TaskDto> tasks)
     {
-        // Сортирует задачи от самых важных (Critical) до обычных (Low)
-        public static IEnumerable<TaskReadDto> SortByPriority(IEnumerable<TaskReadDto> tasks)
-        {
-            return tasks.OrderByDescending(t => t.Priority);
-        }
+        return tasks.OrderByDescending(t => t.Priority);
     }
 }
-

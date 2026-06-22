@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using TaskManager.Application.DTOs.Auth;
 using TaskManager.Application.DTOs.Users;
 using TaskManager.Application.Interfaces;
 

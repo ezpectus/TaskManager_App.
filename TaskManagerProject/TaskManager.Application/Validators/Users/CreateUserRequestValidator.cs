@@ -1,4 +1,5 @@
 using FluentValidation;
+using TaskManager.Application.DTOs.Users;
 
 namespace TaskManager.Application.Validators.Users;
 

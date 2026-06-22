@@ -1,4 +1,5 @@
 using FluentValidation;
+using TaskManager.Application.DTOs.Tags;
 
 namespace TaskManager.Application.Validators.Tags;
 

@@ -81,4 +81,9 @@ public class TaskItem
         IsDeleted = true;
         DeletedAt = DateTime.UtcNow;
     }
+
+    public void Touch()
+    {
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

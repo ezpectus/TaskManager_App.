@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TaskManager.Application.DTOs.Comments;
 using TaskManager.Application.Mapping;
@@ -19,7 +20,7 @@ public class CommentServiceTests
     {
         _repoMock = new Mock<ICommentRepository>();
         _uowMock = new Mock<IUnitOfWork>();
-        _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>()).CreateMapper();
+        _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), NullLoggerFactory.Instance).CreateMapper();
         _service = new CommentService(_repoMock.Object, _mapper, _uowMock.Object);
     }
 

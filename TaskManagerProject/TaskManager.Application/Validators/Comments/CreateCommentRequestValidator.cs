@@ -1,4 +1,5 @@
 using FluentValidation;
+using TaskManager.Application.DTOs.Comments;
 
 namespace TaskManager.Application.Validators.Comments;
 

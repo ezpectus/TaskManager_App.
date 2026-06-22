@@ -30,7 +30,7 @@ public class TaskService : ITaskService
         var entity = _mapper.Map<TaskItem>(dto);
         entity.Id = Guid.NewGuid();
         entity.CreatedAt = DateTime.UtcNow;
-        entity.UpdatedAt = DateTime.UtcNow;
+        entity.Touch();
 
         await _repo.AddAsync(entity, ct);
         await _unitOfWork.SaveChangesAsync(ct);
@@ -71,7 +71,7 @@ public class TaskService : ITaskService
         if (task == null) return false;
 
         _mapper.Map(dto, task);
-        task.UpdatedAt = DateTime.UtcNow;
+        task.Touch();
 
         await _repo.UpdateAsync(task, ct);
         await _unitOfWork.SaveChangesAsync(ct);
