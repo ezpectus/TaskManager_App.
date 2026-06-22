@@ -15,9 +15,9 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
-using TaskManager.Infrastucture.DepenInjection;
-using TaskManager.Infrastucture.Persistence;
-using TaskManager.Infrastucture.Persistence.Contexts;
+using TaskManager.Infrastructure.DepenInjection;
+using TaskManager.Infrastructure.Persistence;
+using TaskManager.Infrastructure.Persistence.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
 
