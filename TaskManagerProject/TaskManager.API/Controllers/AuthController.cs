@@ -19,6 +19,12 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    /// <summary>
+    /// Authenticate user and receive JWT token + refresh token
+    /// </summary>
+    /// <param name="request">Login credentials (email + password)</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>JWT token, refresh token, user info</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request, CancellationToken ct)
     {
@@ -26,6 +32,12 @@ public class AuthController : ControllerBase
         return result == null ? Unauthorized() : Ok(result);
     }
 
+    /// <summary>
+    /// Refresh expired JWT token using a valid refresh token
+    /// </summary>
+    /// <param name="request">Refresh token request</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>New JWT token + new refresh token</returns>
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh(RefreshTokenRequest request, CancellationToken ct)
     {

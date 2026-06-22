@@ -56,7 +56,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "TaskManager API",
         Version = "v1",
-        Description = "Task management REST API with JWT authentication"
+        Description = "TaskManager API v1.6 — JWT auth with refresh tokens, task CRUD, subtasks, comments, activity logs, user management"
     });
 
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

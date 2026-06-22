@@ -49,6 +49,12 @@ public class UsersController : ControllerBase
         return ok ? NoContent() : NotFound();
     }
 
+    /// <summary>
+    /// Update user profile (username and email)
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <param name="dto">Updated username and email</param>
+    /// <param name="ct">Cancellation token</param>
     [HttpPut("{id:guid}/profile")]
     public async Task<IActionResult> UpdateProfile(Guid id, UpdateUserRequest dto, CancellationToken ct)
     {
@@ -56,6 +62,12 @@ public class UsersController : ControllerBase
         return ok ? NoContent() : NotFound();
     }
 
+    /// <summary>
+    /// Change user password (requires current password verification)
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <param name="request">Current password + new password</param>
+    /// <param name="ct">Cancellation token</param>
     [HttpPost("{id:guid}/change-password")]
     public async Task<IActionResult> ChangePassword(Guid id, ChangePasswordRequest request, CancellationToken ct)
     {
