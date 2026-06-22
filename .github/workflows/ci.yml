@@ -19,13 +19,13 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore
-        run: dotnet restore TaskManagerProject/TaskManager.sln
+        run: dotnet restore TaskManagerProject/TaskManagerSolution.sln
 
       - name: Build
-        run: dotnet build TaskManagerProject/TaskManager.sln --no-restore
+        run: dotnet build TaskManagerProject/TaskManagerSolution.sln --no-restore
 
       - name: Test
-        run: dotnet test TaskManagerProject/TaskManager.sln --no-build --verbosity normal
+        run: dotnet test TaskManagerProject/TaskManagerSolution.sln --no-build --verbosity normal
 
   frontend:
     name: Frontend Build
