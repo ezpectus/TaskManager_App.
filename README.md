@@ -90,7 +90,8 @@ TaskManagerSolution/
 │   ├── future.md                    # Future plans
 │   └── ideas.md                     # Extension ideas with detailed features
 ├── audit.md                         # Full audit with status
-├── start.bat                        # One-click startup script
+├── start.bat                        # One-click startup (Windows)
+├── start.sh                         # One-click startup (Linux)
 └── README.md
 ```
 
@@ -104,9 +105,18 @@ TaskManagerSolution/
 - Node.js 20+ and npm
 
 ### Quick Start
+
+**Windows:**
 ```batch
 start.bat
 ```
+
+**Linux:**
+```bash
+chmod +x start.sh
+./start.sh
+```
+
 This will:
 1. Restore NuGet packages
 2. Build the solution

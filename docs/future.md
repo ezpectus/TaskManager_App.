@@ -4,37 +4,37 @@ This document outlines the planned evolution of the Task Manager App beyond its 
 
 ---
 
-## Current State (Completed)
+## Current State (v1.6 — Completed)
 
 The application is a fully functional full-stack task manager with:
-- Backend: ASP.NET Core 9, Clean Architecture, JWT auth, EF Core + PostgreSQL
-- Frontend: React 19, TypeScript, TailwindCSS, Kanban board, dashboard
-- Testing: 30+ unit tests (xUnit + Moq)
-- DevOps: `.editorconfig`, structured logging, health checks
+- Backend: ASP.NET Core 9, Clean Architecture, JWT auth + refresh tokens, EF Core + PostgreSQL
+- Frontend: React 19, TypeScript, TailwindCSS, Kanban board with drag & drop, dashboard with filters, analytics page, markdown rendering, CSV export, profile editing with password change
+- Testing: 45+ unit tests (xUnit + Moq + AutoMapper)
+- DevOps: Docker, GitHub Actions CI/CD, docker-compose, nginx, start.bat (Windows) + start.sh (Linux)
+- Features: Rate limiting, response caching, activity logging, DB seeding, task assignment, soft delete, optimistic concurrency
 
 ---
 
-## Phase 1: Stability & DevOps (Short-term)
+## Phase 1: Stability & DevOps ✅ Completed
 
-### Docker Containerization
-- `Dockerfile` for backend (multi-stage build)
-- `Dockerfile` for frontend (Vite build + nginx serve)
-- `docker-compose.yml` with PostgreSQL, API, and frontend services
-- Volume mapping for database persistence
-- Environment-based configuration
+### Docker Containerization ✅
+- ~~`Dockerfile` for backend (multi-stage build)~~
+- ~~`Dockerfile` for frontend (Vite build + nginx serve)~~
+- ~~`docker-compose.yml` with PostgreSQL, API, and frontend services~~
+- ~~Volume mapping for database persistence~~
+- ~~Environment-based configuration~~
 
-### CI/CD Pipeline
-- GitHub Actions workflow for:
-  - Build and test on push
-  - Lint and format check
-  - Docker image build and push on merge to main
-- Branch protection rules
-- Automated PR checks
+### CI/CD Pipeline ✅
+- ~~GitHub Actions workflow for build and test on push~~
+- ~~Automated PR checks~~
 
-### Database Migrations
-- EF Core migration scripts
-- Migration runner in `Program.cs`
-- Seed data for development
+### Database & Seeding ✅
+- ~~Seed data for development (admin/demo users, roles, sample tasks)~~
+- ~~DB seeding on startup (DbSeeder)~~
+
+### Cross-Platform Startup ✅
+- ~~`start.bat` for Windows~~
+- ~~`start.sh` for Linux~~
 
 ---
 
@@ -147,7 +147,7 @@ The application is a fully functional full-stack task manager with:
 
 | Phase | Technologies | Timeline |
 |-------|-------------|----------|
-| 1 | Docker, GitHub Actions, EF Migrations | 2-3 weeks |
+| 1 | Docker, GitHub Actions, EF Migrations | ✅ Done |
 | 2 | SignalR, SMTP, Notification system | 3-4 weeks |
 | 3 | Dependencies, Recurring tasks, Time tracking | 4-6 weeks |
 | 4 | Teams, RBAC, Rich comments | 3-4 weeks |
