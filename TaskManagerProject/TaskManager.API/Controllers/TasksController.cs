@@ -44,7 +44,7 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> GetAll(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
-        [FromQuery] TaskStatus? status = null,
+        [FromQuery] Domain.Enums.TaskStatus? status = null,
         [FromQuery] TaskPriority? priority = null,
         [FromQuery] Guid? userId = null,
         [FromQuery] string? searchTerm = null,

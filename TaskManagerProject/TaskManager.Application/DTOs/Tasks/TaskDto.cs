@@ -15,7 +15,7 @@ public class TaskDto
 
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public TaskStatus Status { get; set; }
+    public Domain.Enums.TaskStatus Status { get; set; }
     public TaskPriority Priority { get; set; }
 
     public DateTime Deadline { get; set; }

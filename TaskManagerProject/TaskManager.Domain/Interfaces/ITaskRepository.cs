@@ -13,7 +13,7 @@ public interface ITaskRepository
     Task<IReadOnlyCollection<TaskItem>> GetAllAsync(CancellationToken ct);
     Task<(IReadOnlyCollection<TaskItem> Items, int TotalCount)> GetPagedAsync(
         int page, int pageSize,
-        TaskStatus? status = null,
+        Domain.Enums.TaskStatus? status = null,
         TaskPriority? priority = null,
         Guid? userId = null,
         string? searchTerm = null,

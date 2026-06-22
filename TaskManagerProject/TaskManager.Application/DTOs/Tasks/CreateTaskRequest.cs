@@ -7,7 +7,7 @@ public class CreateTaskRequest
 {
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public TaskStatus Status { get; set; } = TaskStatus.Todo;
+    public Domain.Enums.TaskStatus Status { get; set; } = Domain.Enums.TaskStatus.Todo;
     public TaskPriority Priority { get; set; } = TaskPriority.Medium;
     public DateTime Deadline { get; set; }
 

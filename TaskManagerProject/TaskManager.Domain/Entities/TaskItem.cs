@@ -10,7 +10,7 @@ public class TaskItem
 
     public string Title { get; private set; } = null!;
     public string Description { get; private set; } = null!;
-    public TaskStatus Status { get; private set; } = TaskStatus.Todo;
+    public Domain.Enums.TaskStatus Status { get; private set; } = Domain.Enums.TaskStatus.Todo;
     public TaskPriority Priority { get; private set; } = TaskPriority.Medium;
 
     public DateTime Deadline { get; set; }
@@ -38,7 +38,7 @@ public class TaskItem
             Id = Guid.NewGuid(),
             Title = title,
             Description = description,
-            Status = TaskStatus.Todo,
+            Status = Domain.Enums.TaskStatus.Todo,
             Priority = priority,
             Deadline = deadline ?? DateTime.MaxValue,
             CreatedAt = DateTime.UtcNow,
@@ -55,9 +55,9 @@ public class TaskItem
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void ChangeStatus(TaskStatus newStatus)
+    public void ChangeStatus(Domain.Enums.TaskStatus newStatus)
     {
-        if (Status == TaskStatus.Done && newStatus != TaskStatus.Done)
+        if (Status == Domain.Enums.TaskStatus.Done && newStatus != Domain.Enums.TaskStatus.Done)
             throw new InvalidOperationException("Completed task cannot be reopened");
         Status = newStatus;
         UpdatedAt = DateTime.UtcNow;
@@ -65,7 +65,7 @@ public class TaskItem
 
     public void MarkAsCompleted()
     {
-        Status = TaskStatus.Done;
+        Status = Domain.Enums.TaskStatus.Done;
         UpdatedAt = DateTime.UtcNow;
     }
 

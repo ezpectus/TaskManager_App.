@@ -67,7 +67,7 @@ public class TaskServiceEdgeCaseTests
 
         _repoMock.Setup(r => r.GetPagedAsync(
                 It.IsAny<int>(), It.IsAny<int>(),
-                It.IsAny<TaskStatus?>(), It.IsAny<TaskPriority?>(),
+                It.IsAny<Domain.Enums.TaskStatus?>(), It.IsAny<TaskPriority?>(),
                 It.IsAny<Guid?>(), It.IsAny<string?>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((tasks.AsReadOnly(), 10));
@@ -87,7 +87,7 @@ public class TaskServiceEdgeCaseTests
     {
         _repoMock.Setup(r => r.GetPagedAsync(
                 It.IsAny<int>(), It.IsAny<int>(),
-                It.IsAny<TaskStatus?>(), It.IsAny<TaskPriority?>(),
+                It.IsAny<Domain.Enums.TaskStatus?>(), It.IsAny<TaskPriority?>(),
                 It.IsAny<Guid?>(), It.IsAny<string?>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((Array.Empty<TaskItem>().AsReadOnly(), 0));
@@ -106,11 +106,11 @@ public class TaskServiceEdgeCaseTests
         _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
 
-        var dto = new UpdateTaskRequest { Status = TaskStatus.InProgress };
+        var dto = new UpdateTaskRequest { Status = Domain.Enums.TaskStatus.InProgress };
         var result = await _service.UpdateAsync(Guid.NewGuid(), dto, CancellationToken.None);
 
         Assert.True(result);
-        Assert.Equal(TaskStatus.InProgress, task.Status);
+        Assert.Equal(Domain.Enums.TaskStatus.InProgress, task.Status);
     }
 
     [Fact]
