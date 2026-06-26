@@ -1,6 +1,8 @@
-# Extension Ideas & Detailed Features
+# Extension Ideas & Detailed Specifications
 
-This document describes potential extensions and feature ideas for the Task Manager App, with detailed functional specifications.
+This document contains **detailed functional specifications** for potential extensions and features. It serves as the companion to [future.md](future.md), which defines the **timeline and priority** for each feature.
+
+Each idea below includes a concept description, detailed functionality, and data model extensions where applicable.
 
 ---
 

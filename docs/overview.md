@@ -1,4 +1,4 @@
-# Task Manager App - Project Overview
+# Task Manager App — Project Overview
 
 ## Overview
 
@@ -15,10 +15,10 @@ The repository is published publicly as a personal learning project and architec
 The idea for this project emerged during the summer as a deliberate decision to move from theory to practice.
 
 The main motivations were:
-- to experiment with new backend technologies in a controlled environment
-- to apply architectural patterns that were previously studied only in theory
-- to understand how backend architecture is built from scratch without relying on templates or auto-generated code
-- to gain experience that can later be transferred to other languages and technology stacks
+- To experiment with new backend technologies in a controlled environment
+- To apply architectural patterns that were previously studied only in theory
+- To understand how backend architecture is built from scratch without relying on templates or auto-generated code
+- To gain experience that can later be transferred to other languages and technology stacks
 
 The focus was intentionally placed on structure, reasoning, and architectural decisions rather than development speed or feature count.
 
@@ -28,7 +28,7 @@ The focus was intentionally placed on structure, reasoning, and architectural de
 
 ### What Is Implemented
 
-The project is now a full-stack application with both backend and frontend:
+The project is a full-stack application with both backend and frontend:
 
 **Backend:**
 - ASP.NET Core 9 Web API with Clean Architecture
@@ -51,7 +51,7 @@ The project is now a full-stack application with both backend and frontend:
 - Swagger/OpenAPI with XML comments and JWT Bearer scheme
 - CORS and health checks
 - DB seeding on startup
-- Unit tests (xUnit + Moq): 45+ tests
+- Unit tests (xUnit + Moq): 60 tests
 
 **Frontend:**
 - React 19 + TypeScript + TailwindCSS + Vite
@@ -72,17 +72,64 @@ The project is now a full-stack application with both backend and frontend:
 
 The project is built using a simplified version of Clean Architecture with selected concepts inspired by Domain-Driven Design.
 
+### Layer Diagram
+
+```mermaid
+graph TB
+    subgraph "Clean Architecture — Dependency Direction"
+        API["API Layer<br/>Controllers, Middleware, Swagger<br/>Depends on: Application + Infrastructure"]
+        APP["Application Layer<br/>Services, DTOs, Validators, Mapping<br/>Depends on: Domain"]
+        INF["Infrastructure Layer<br/>EF Core, Repositories, DI, Interceptors<br/>Depends on: Domain"]
+        DOM["Domain Layer<br/>Entities, Enums, Interfaces<br/>Depends on: nothing"]
+    end
+
+    API -->|references| APP
+    API -->|references| INF
+    APP -->|references| DOM
+    INF -->|references| DOM
+
+    style DOM fill:#e1f5fe,stroke:#0288d1,stroke-width:3px
+    style APP fill:#f3e5f5,stroke:#7b1fa2
+    style INF fill:#fff3e0,stroke:#ef6c00
+    style API fill:#e8f5e9,stroke:#388e3c
+```
+
 ### Layers
 
-- **API** — HTTP controllers and request/response contracts
-- **Application** — services and business logic
-- **Domain** — domain models and core entities
-- **Persistence** — EF Core mapping and PostgreSQL interaction
-- **Infrastructure** — external and infrastructure-related dependencies
-- **Tests** — placeholder layer for future automated tests
+| Layer | Project | Responsibility | Dependencies |
+|-------|---------|----------------|--------------|
+| **API** | `TaskManager.API` | HTTP controllers, middleware, Swagger, DI configuration | Application, Infrastructure |
+| **Application** | `TaskManager.Application` | Services, DTOs, validators, AutoMapper profiles | Domain |
+| **Infrastructure** | `TaskManager.Infrastructure` | EF Core DbContext, repositories, DI extensions, interceptors | Domain |
+| **Domain** | `TaskManager.Domain` | Entities, enums, interfaces (repositories, services, Unit of Work) | None |
+| **Tests** | `TaskManager.Test` | Unit tests (xUnit + Moq) for services, controllers, and domain entities | Application, Domain |
 
-The core rule is simple:  
-**inner layers do not depend on outer layers**.
+**Core rule:** inner layers do not depend on outer layers. The Domain layer has zero external NuGet dependencies.
+
+### Request Flow
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant Ctrl as Controller
+    participant Svc as Service
+    participant UoW as UnitOfWork
+    participant Repo as Repository
+    participant DB as PostgreSQL
+
+    C->>Ctrl: HTTP Request
+    Ctrl->>Ctrl: Model validation (FluentValidation)
+    Ctrl->>Svc: Call service method
+    Svc->>Repo: Query/mutate via repository
+    Repo->>DB: SQL query
+    DB-->>Repo: Result
+    Repo-->>Svc: Entity/DTO
+    Svc->>UoW: SaveChangesAsync()
+    UoW->>DB: Transaction commit
+    UoW->>UoW: ActivityLogInterceptor logs changes
+    Svc-->>Ctrl: Result DTO
+    Ctrl-->>C: HTTP Response (200/201/204/400/404/500)
+```
 
 ---
 
@@ -91,31 +138,96 @@ The core rule is simple:
 The PostgreSQL schema was designed and created manually.
 
 Entity Framework Core is not used to generate the database schema. Instead, it is used strictly as an ORM for:
-- mapping existing tables
-- handling data access
-- defining relationships and constraints
-- enforcing consistency between code and database
+- Mapping existing tables
+- Handling data access
+- Defining relationships and constraints
+- Enforcing consistency between code and database
 
-All configuration is performed using Fluent API.  
-EF Core is treated as a tool for explicit control, not as a magic abstraction.
+All configuration is performed using Fluent API. EF Core is treated as a tool for explicit control, not as a magic abstraction.
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    User ||--o{ TaskItem : "assigned to"
+    User ||--o{ Comment : "writes"
+    User ||--o{ ActivityLog : "performs"
+    User ||--o{ FileAttachment : "uploads"
+    User ||--o{ UserRole : "has"
+    Role ||--o{ UserRole : "assigned to"
+    TaskItem ||--o{ Subtask : "has"
+    TaskItem ||--o{ Comment : "has"
+    TaskItem ||--o{ FileAttachment : "has"
+    TaskItem ||--o{ ActivityLog : "tracks"
+    TaskItem ||--o{ TaskTag : "tagged with"
+    Tag ||--o{ TaskTag : "applied to"
+
+    User {
+        Guid Id PK
+        string Username
+        string Email
+        string PasswordHash
+        DateTime CreatedAt
+    }
+
+    TaskItem {
+        Guid Id PK
+        string Title
+        string Description
+        TaskStatus Status
+        TaskPriority Priority
+        DateTime Deadline
+        DateTime CreatedAt
+        DateTime UpdatedAt
+        bool IsDeleted
+        DateTime DeletedAt
+        byte RowVersion
+        Guid UserId FK
+    }
+
+    Subtask {
+        Guid Id PK
+        string Title
+        bool IsCompleted
+        bool IsDeleted
+        Guid TaskId FK
+    }
+
+    Comment {
+        Guid Id PK
+        string Content
+        DateTime CreatedAt
+        bool IsDeleted
+        Guid TaskId FK
+        Guid UserId FK
+    }
+
+    ActivityLog {
+        Guid Id PK
+        string ActionType
+        DateTime Timestamp
+        Guid TaskId FK
+        Guid UserId FK
+    }
+```
 
 ---
 
-## DTO and Request Models
+## Key Design Decisions
+
+### DTO and Request Models
 
 DTOs and request models are intentionally separated.
 
 This separation exists because:
-- client input is not the same as application data
-- it provides explicit control over what the client is allowed to send
-- it prevents accidental API contract changes
-- it simplifies handling canceled requests and network failures
+- Client input is not the same as application data
+- It provides explicit control over what the client is allowed to send
+- It prevents accidental API contract changes
+- It simplifies handling canceled requests and network failures
 
 This decision emerged from practical experience rather than theoretical guidelines.
 
----
-
-## Unit of Work
+### Unit of Work
 
 A custom Unit of Work abstraction (`IUnitOfWork`) is implemented in the Domain layer with a concrete implementation in Infrastructure.
 
@@ -124,42 +236,76 @@ A custom Unit of Work abstraction (`IUnitOfWork`) is implemented in the Domain l
 - This ensures transactional consistency across multiple repository operations
 - An `ActivityLogInterceptor` automatically logs entity changes on `SaveChangesAsync`
 
+### Domain-Driven Design
+
+Entities encapsulate their invariants through:
+- **Private setters** — state cannot be modified externally
+- **Factory methods** — `TaskItem.Create()`, `Subtask.Create()`, `Comment.Create()`
+- **State transition methods** — `ChangeStatus()`, `MarkAsCompleted()`, `SoftDelete()`
+- **Business rule enforcement** — completed tasks cannot be reopened (throws `InvalidOperationException`)
+
+### Soft Delete
+
+Soft delete is implemented via `IsDeleted` flag and `DeletedAt` timestamp on `TaskItem`, `Comment`, and `Subtask`. EF Core global query filters automatically exclude deleted records from queries.
+
+### Optimistic Concurrency
+
+`TaskItem` uses a `RowVersion` (byte[]) property configured with `.IsRowVersion()` in EF Core. Concurrent updates trigger `DbUpdateConcurrencyException`, preventing lost updates.
+
+---
+
+## Technology Choices & Rationale
+
+For detailed Architecture Decision Records, see [docs/adr/](adr/).
+
+| Technology | Choice | Why |
+|------------|--------|-----|
+| **Database** | PostgreSQL | Open-source, robust, excellent .NET support via Npgsql, JSON support for future flexibility |
+| **ORM** | EF Core 9 | First-party Microsoft ORM, Fluent API for explicit control, migration support |
+| **Architecture** | Clean Architecture | Separation of concerns, testability, dependency inversion, domain-centric design |
+| **Password hashing** | BCrypt.Net-Next | Industry standard, adaptive cost factor, actively maintained fork |
+| **Object mapping** | AutoMapper 15.x | Convention-based mapping reduces boilerplate; requires `ILoggerFactory` in v15+ |
+| **Validation** | FluentValidation 12.x | More expressive than Data Annotations, testable, supports complex rules |
+| **Logging** | Serilog | Structured logging with rich context, multiple sinks (Console, File, Elasticsearch) |
+| **API versioning** | Asp.Versioning.Mvc | Community standard for ASP.NET Core versioning, URL segment support |
+| **Testing** | xUnit + Moq | Standard .NET testing stack, rich mocking, parallel test execution |
+
 ---
 
 ## Constraints & Trade-offs
 
 The main constraints of the project were:
-- solo development
-- limited available time
-- strong focus on backend architecture
-- no requirement to finish all planned features
+- Solo development
+- Limited available time
+- Strong focus on backend architecture
+- No requirement to finish all planned features
 
 As a result:
-- development took more than six months
-- approximately 60% of planned features remain unimplemented
-- parts of the architecture are intentionally over-engineered for learning purposes
+- Development took more than six months
+- Parts of the architecture are intentionally over-engineered for learning purposes
+- The frontend was added later as a complement to the backend focus
 
 ---
 
-## Planned Features (If Development Continues)
+## Implemented Features
 
-The following features are now implemented:
-- ~~frontend application (React)~~ ✅
-- ~~JWT-based authentication and authorization~~ ✅
-- ~~Swagger / OpenAPI integration~~ ✅
-- ~~Unit of Work pattern~~ ✅
-- ~~Pagination and filtering~~ ✅
-- ~~Soft delete~~ ✅
-- ~~API versioning~~ ✅
-- ~~Unit tests~~ ✅
-- ~~Refresh tokens~~ ✅
-- ~~Password change endpoint~~ ✅
-- ~~User profile update~~ ✅
-- ~~Markdown rendering in descriptions~~ ✅
-- ~~CSV export~~ ✅
-- ~~Analytics page with charts~~ ✅
-- ~~Drag & drop Kanban~~ ✅
-- ~~Docker containerization and CI/CD~~ ✅
+All planned v1 features are now implemented:
+- Frontend application (React) — done
+- JWT-based authentication and authorization — done
+- Swagger / OpenAPI integration — done
+- Unit of Work pattern — done
+- Pagination and filtering — done
+- Soft delete — done
+- API versioning — done
+- Unit tests — done (60 tests)
+- Refresh tokens — done
+- Password change endpoint — done
+- User profile update — done
+- Markdown rendering in descriptions — done
+- CSV export — done
+- Analytics page with charts — done
+- Drag & drop Kanban — done
+- Docker containerization and CI/CD — done
 
 Potential future directions:
 - Notifications system (email, in-app)
@@ -180,9 +326,9 @@ See [future.md](future.md) and [ideas.md](ideas.md) for detailed plans.
 - Architecture-driven
 
 This project should be viewed as:
-- a demonstration of architectural thinking
-- a learning baseline
-- a foundation for future, more compact systems
+- A demonstration of architectural thinking
+- A learning baseline
+- A foundation for future, more compact systems
 
 ---
 
@@ -192,8 +338,9 @@ This project should be viewed as:
 - ASP.NET Core 9 Web API
 - C# / .NET 9
 - PostgreSQL + EF Core 9
-- AutoMapper, FluentValidation, Serilog
-- Asp.Versioning.Mvc (API versioning)
+- AutoMapper 15.1.3, FluentValidation 12.1.0, Serilog 9.0.0
+- Asp.Versioning.Mvc 8.1.0 (API versioning)
+- BCrypt.Net-Next 4.0.3 (password hashing)
 - xUnit + Moq (testing)
 
 ### Frontend
@@ -212,6 +359,6 @@ This project should be viewed as:
 This project is not about speed and not about building a perfect CRUD system.
 
 It is about understanding:
-- where architecture helps
-- where it starts to slow development
-- and what architectural purity realistically costs in solo development
+- Where architecture helps
+- Where it starts to slow development
+- And what architectural purity realistically costs in solo development
