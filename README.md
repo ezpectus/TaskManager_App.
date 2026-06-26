@@ -150,12 +150,9 @@ npm run dev
 
 ## Documentation
 - [Project Overview](docs/overview.md)
-- [Architecture Decisions](docs/architecture.md)
-- [Roadmap](docs/roadmap.md)
 - [Future Plans](docs/future.md)
 - [Extension Ideas](docs/ideas.md)
-- [Full Audit](audit.md)
-
+  
 ---
 
 ## Project Type
