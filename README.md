@@ -85,11 +85,8 @@ TaskManagerSolution/
 │   └── .editorconfig                # Code style rules
 ├── docs/
 │   ├── overview.md                  # Project overview
-│   ├── architecture.md              # Architecture decisions
-│   ├── roadmap.md                   # Development roadmap
 │   ├── future.md                    # Future plans
 │   └── ideas.md                     # Extension ideas with detailed features
-├── audit.md                         # Full audit with status
 ├── start.bat                        # One-click startup (Windows)
 ├── start.sh                         # One-click startup (Linux)
 └── README.md
