@@ -9,7 +9,7 @@ This document outlines the planned evolution of the Task Manager App beyond its 
 The application is a fully functional full-stack task manager with:
 - **Backend**: ASP.NET Core 9, Clean Architecture, JWT auth + refresh tokens, EF Core + PostgreSQL
 - **Frontend**: React 19, TypeScript, TailwindCSS, Kanban board with drag & drop, dashboard with filters, analytics page, markdown rendering, CSV export, profile editing with password change
-- **Testing**: 60 unit tests (xUnit + Moq + AutoMapper)
+- **Testing**: 78 unit tests (xUnit + Moq + AutoMapper)
 - **DevOps**: Docker, GitHub Actions CI/CD, docker-compose, nginx, start.bat (Windows) + start.sh (Linux)
 - **Features**: Rate limiting, response caching, activity logging, DB seeding, task assignment, soft delete, optimistic concurrency
 - **Documentation**: ADRs, API reference, changelog, contributing guide, refactoring log

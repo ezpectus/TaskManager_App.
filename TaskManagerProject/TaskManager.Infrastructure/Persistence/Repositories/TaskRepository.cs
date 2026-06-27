@@ -21,10 +21,18 @@ public class TaskRepository : ITaskRepository
         => await _context.Tasks.AddAsync(task, ct);
 
     public async Task<TaskItem?> GetByIdAsync(Guid id, CancellationToken ct)
-        => await _context.Tasks.FindAsync([id], ct);
+        => await _context.Tasks
+            .Include(t => t.User)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == id, ct);
 
     public async Task<IReadOnlyCollection<TaskItem>> GetAllAsync(CancellationToken ct)
-        => await _context.Tasks.ToListAsync(ct);
+        => await _context.Tasks
+            .Include(t => t.User)
+            .AsNoTracking()
+            .OrderByDescending(t => t.CreatedAt)
+            .Take(500)
+            .ToListAsync(ct);
 
     public async Task<(IReadOnlyCollection<TaskItem> Items, int TotalCount)> GetPagedAsync(
         int page, int pageSize,
@@ -34,7 +42,10 @@ public class TaskRepository : ITaskRepository
         string? searchTerm = null,
         CancellationToken ct = default)
     {
-        var query = _context.Tasks.AsQueryable();
+        var query = _context.Tasks
+            .Include(t => t.User)
+            .AsNoTracking()
+            .AsQueryable();
 
         if (status.HasValue)
             query = query.Where(t => t.Status == status.Value);

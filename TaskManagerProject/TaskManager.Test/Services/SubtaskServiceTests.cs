@@ -42,7 +42,7 @@ public class SubtaskServiceTests
         _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Subtask?)null);
 
-        var result = await _service.UpdateAsync(Guid.NewGuid(), new SubtaskDto(), CancellationToken.None);
+        var result = await _service.UpdateAsync(Guid.NewGuid(), new UpdateSubtaskRequest(), CancellationToken.None);
 
         Assert.False(result);
     }
@@ -54,7 +54,7 @@ public class SubtaskServiceTests
         _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(subtask);
 
-        var dto = new SubtaskDto { Title = "New Title", IsCompleted = true };
+        var dto = new UpdateSubtaskRequest { Title = "New Title", IsCompleted = true };
         var result = await _service.UpdateAsync(Guid.NewGuid(), dto, CancellationToken.None);
 
         Assert.True(result);

@@ -19,6 +19,23 @@ public class TaskItemTests
     }
 
     [Fact]
+    public void Create_Should_Set_Deadline_To_MaxValue_When_Not_Provided()
+    {
+        var task = TaskItem.Create("Title", "Desc", TaskPriority.High);
+
+        Assert.Equal(DateTime.MaxValue, task.Deadline);
+    }
+
+    [Fact]
+    public void Create_Should_Set_Deadline_When_Provided()
+    {
+        var deadline = new DateTime(2026, 12, 31);
+        var task = TaskItem.Create("Title", "Desc", TaskPriority.High, deadline);
+
+        Assert.Equal(deadline, task.Deadline);
+    }
+
+    [Fact]
     public void UpdateDetails_Should_Change_Title_And_Description()
     {
         var task = TaskItem.Create("Old", "Old Desc", TaskPriority.Low);
@@ -28,6 +45,105 @@ public class TaskItemTests
         Assert.Equal("New", task.Title);
         Assert.Equal("New Desc", task.Description);
         Assert.Equal(TaskPriority.High, task.Priority);
+    }
+
+    [Fact]
+    public void UpdateDetails_Should_Update_Deadline_When_Provided()
+    {
+        var task = TaskItem.Create("T", "D", TaskPriority.Medium);
+        var newDeadline = new DateTime(2026, 12, 31);
+
+        task.UpdateDetails("T", "D", TaskPriority.Medium, newDeadline);
+
+        Assert.Equal(newDeadline, task.Deadline);
+    }
+
+    [Fact]
+    public void UpdateDetails_Should_Preserve_Deadline_When_Not_Provided()
+    {
+        var deadline = new DateTime(2026, 12, 31);
+        var task = TaskItem.Create("T", "D", TaskPriority.Medium, deadline);
+
+        task.UpdateDetails("T2", "D2", TaskPriority.High);
+
+        Assert.Equal(deadline, task.Deadline);
+    }
+
+    [Fact]
+    public void UpdateDetails_Should_Update_UpdatedAt()
+    {
+        var task = TaskItem.Create("T", "D", TaskPriority.Medium);
+        var originalUpdatedAt = task.UpdatedAt;
+
+        Thread.Sleep(10);
+        task.UpdateDetails("T2", "D2", TaskPriority.High);
+
+        Assert.True(task.UpdatedAt > originalUpdatedAt);
+    }
+
+    [Fact]
+    public void Create_With_PastDeadline_Should_Store_Correctly()
+    {
+        var pastDeadline = DateTime.UtcNow.AddDays(-5);
+        var task = TaskItem.Create("T", "D", TaskPriority.High, pastDeadline);
+
+        Assert.Equal(pastDeadline, task.Deadline);
+    }
+
+    [Fact]
+    public void Create_With_FutureDeadline_Should_Store_Correctly()
+    {
+        var futureDeadline = DateTime.UtcNow.AddDays(30);
+        var task = TaskItem.Create("T", "D", TaskPriority.Low, futureDeadline);
+
+        Assert.Equal(futureDeadline, task.Deadline);
+    }
+
+    [Fact]
+    public void UpdateDetails_With_NullDeadline_Should_Keep_Existing()
+    {
+        var originalDeadline = DateTime.UtcNow.AddDays(10);
+        var task = TaskItem.Create("T", "D", TaskPriority.Medium, originalDeadline);
+
+        task.UpdateDetails("T2", "D2", TaskPriority.High, null);
+
+        Assert.Equal(originalDeadline, task.Deadline);
+    }
+
+    [Fact]
+    public void ChangeStatus_Should_Update_UpdatedAt()
+    {
+        var task = TaskItem.Create("T", "D", TaskPriority.Medium);
+        var originalUpdatedAt = task.UpdatedAt;
+
+        Thread.Sleep(10);
+        task.ChangeStatus(TaskManager.Domain.Enums.TaskStatus.InProgress);
+
+        Assert.True(task.UpdatedAt > originalUpdatedAt);
+    }
+
+    [Fact]
+    public void AssignTo_Should_Set_UserId()
+    {
+        var task = TaskItem.Create("T", "D", TaskPriority.Medium);
+        var user = new User { Id = Guid.NewGuid(), Username = "testuser", Email = "test@example.com", PasswordHash = "hash" };
+
+        task.AssignTo(user);
+
+        Assert.Equal(user.Id, task.UserId);
+        Assert.NotNull(task.User);
+    }
+
+    [Fact]
+    public void Touch_Should_Update_UpdatedAt()
+    {
+        var task = TaskItem.Create("T", "D", TaskPriority.Medium);
+        var originalUpdatedAt = task.UpdatedAt;
+
+        Thread.Sleep(10);
+        task.Touch();
+
+        Assert.True(task.UpdatedAt > originalUpdatedAt);
     }
 
     [Fact]

@@ -1,7 +1,8 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
-import { LayoutDashboard, Trello, LogOut, CheckSquare, Moon, Sun, User, BarChart3 } from 'lucide-react'
+import { LayoutDashboard, Trello, LogOut, CheckSquare, Moon, Sun, User, BarChart3, Keyboard } from 'lucide-react'
+import KeyboardShortcutsOverlay from './KeyboardShortcutsOverlay'
 import type { ReactNode } from 'react'
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -43,6 +44,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             <button onClick={toggleTheme} className="btn-outline ml-2" title="Toggle theme">
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
+            <button onClick={() => {}} className="btn-outline" title="Keyboard shortcuts (?)">
+              <Keyboard size={18} />
+            </button>
             <button onClick={handleLogout} className="btn-outline">
               <LogOut size={18} /> Logout
             </button>
@@ -50,6 +54,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main>{children}</main>
+      <KeyboardShortcutsOverlay />
     </div>
   )
 }

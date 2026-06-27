@@ -48,7 +48,8 @@ public static class DependencyInjection
             .AddScoped<IFileAttachmentRepository, FileAttachmentRepository>()
             .AddScoped<IActivityLogRepository, ActivityLogRepository>()
             .AddScoped<ITaskTagRepository, TaskTagRepository>()
-            .AddScoped<IUserRoleRepository, UserRoleRepository>();
+            .AddScoped<IUserRoleRepository, UserRoleRepository>()
+            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
     private static IServiceCollection AddServices(this IServiceCollection services)
         => services

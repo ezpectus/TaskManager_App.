@@ -4,7 +4,7 @@ import { taskService } from '../services/taskService'
 import type { UserDto, TaskDto } from '../types'
 import { useToast } from '../context/ToastContext'
 import { useAuth } from '../context/AuthContext'
-import { User as UserIcon, Mail, CheckSquare, Clock, CheckCircle, Save, KeyRound, X, Edit } from 'lucide-react'
+import { User as UserIcon, Mail, CheckSquare, Clock, CheckCircle, Save, KeyRound, X, Edit, Calendar } from 'lucide-react'
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserDto | null>(null)
@@ -66,8 +66,8 @@ export default function ProfilePage() {
       showToast('Passwords do not match', 'error')
       return
     }
-    if (newPassword.length < 6) {
-      showToast('Password must be at least 6 characters', 'error')
+    if (newPassword.length < 8) {
+      showToast('Password must be at least 8 characters', 'error')
       return
     }
     try {
@@ -175,7 +175,15 @@ export default function ProfilePage() {
           <div className="space-y-2">
             {tasks.slice(0, 5).map((task) => (
               <div key={task.id} className="card flex items-center justify-between p-3">
-                <span className="font-medium">{task.title}</span>
+                <div className="flex-1">
+                  <span className="font-medium">{task.title}</span>
+                  {task.deadline && !task.deadline.startsWith('0001-01-01') && (
+                    <span className={`ml-3 text-xs ${task.status !== 'Done' && new Date(task.deadline) < new Date() ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+                      <Calendar size={11} className="inline mr-1" />
+                      {new Date(task.deadline).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
                 <span className={`badge ${
                   task.status === 'Done' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
                   task.status === 'InProgress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :

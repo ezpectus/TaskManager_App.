@@ -38,7 +38,7 @@ public class CommentsController : ControllerBase
         => Ok(await _service.GetByTaskIdAsync(taskId, ct));
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, CreateCommentRequest dto, CancellationToken ct)
+    public async Task<IActionResult> Update(Guid id, UpdateCommentRequest dto, CancellationToken ct)
     {
         var ok = await _service.UpdateAsync(id, dto, ct);
         return ok ? NoContent() : NotFound();

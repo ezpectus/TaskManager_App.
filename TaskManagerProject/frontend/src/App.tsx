@@ -5,6 +5,7 @@ import { ToastProvider } from './context/ToastContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import TaskDetailPage from './pages/TaskDetailPage'
 import KanbanPage from './pages/KanbanPage'
@@ -26,6 +27,7 @@ export default function App() {
           <AuthProvider>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
               <Route
                 path="/"
                 element={

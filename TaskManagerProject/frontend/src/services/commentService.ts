@@ -1,5 +1,5 @@
 import { apiFetch } from '../lib/api'
-import type { CommentDto, CreateCommentRequest } from '../types'
+import type { CommentDto, CreateCommentRequest, UpdateCommentRequest } from '../types'
 
 export const commentService = {
   getByTaskId: (taskId: string) => apiFetch<CommentDto[]>(`/comments/task/${taskId}`),
@@ -10,7 +10,7 @@ export const commentService = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: string, data: CreateCommentRequest) =>
+  update: (id: string, data: UpdateCommentRequest) =>
     apiFetch<void>(`/comments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),

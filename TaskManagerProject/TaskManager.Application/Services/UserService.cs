@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using BCrypt.Net;
+using Microsoft.Extensions.Logging;
 using TaskManager.Application.DTOs.Auth;
 using TaskManager.Application.DTOs.Users;
 using TaskManager.Application.Interfaces;
@@ -17,12 +18,14 @@ public class UserService : IUserService
     private readonly IUserRepository _repo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly ILogger<UserService> _logger;
 
-    public UserService(IUserRepository repo, IUnitOfWork unitOfWork, IMapper mapper)
+    public UserService(IUserRepository repo, IUnitOfWork unitOfWork, IMapper mapper, ILogger<UserService> logger)
     {
         _repo = repo;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<Guid> CreateAsync(CreateUserRequest dto, CancellationToken ct)
@@ -41,6 +44,7 @@ public class UserService : IUserService
 
         await _repo.AddAsync(user, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("User registered: '{Username}' ({Email}, Id: {UserId})", user.Username, user.Email, user.Id);
         return user.Id;
     }
 
@@ -76,6 +80,7 @@ public class UserService : IUserService
 
         await _repo.DeleteAsync(user, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("User deleted: '{Username}' ({Email}, Id: {UserId})", user.Username, user.Email, user.Id);
         return true;
     }
 
@@ -98,6 +103,7 @@ public class UserService : IUserService
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
         await _repo.UpdateAsync(user, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("Password changed for user '{Username}' (Id: {UserId})", user.Username, user.Id);
         return true;
     }
 

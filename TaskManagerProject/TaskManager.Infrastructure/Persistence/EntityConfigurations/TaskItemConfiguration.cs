@@ -41,6 +41,12 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         builder.Property(t => t.RowVersion)
             .IsRowVersion();
 
+        builder.HasIndex(t => t.Deadline);
+        builder.HasIndex(t => t.Status);
+        builder.HasIndex(t => t.Priority);
+        builder.HasIndex(t => t.UserId);
+        builder.HasIndex(t => new { t.Status, t.Priority });
+
         builder.HasOne(t => t.User)
             .WithMany(u => u.Tasks)
             .HasForeignKey(t => t.UserId);

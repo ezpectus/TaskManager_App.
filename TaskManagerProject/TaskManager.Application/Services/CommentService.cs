@@ -43,7 +43,7 @@ public class CommentService : ICommentService
         return _mapper.Map<IEnumerable<CommentDto>>(list);
     }
 
-    public async Task<bool> UpdateAsync(Guid id, CreateCommentRequest dto, CancellationToken ct)
+    public async Task<bool> UpdateAsync(Guid id, UpdateCommentRequest dto, CancellationToken ct)
     {
         var e = await _repo.GetByIdAsync(id, ct);
         if (e == null) return false;

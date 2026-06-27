@@ -23,6 +23,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     [ResponseCache(Duration = 60)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
         => Ok(await _service.GetAllAsync(ct));
@@ -44,9 +45,9 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, UserDto dto, CancellationToken ct)
+    public async Task<IActionResult> Update(Guid id, UpdateUserRequest dto, CancellationToken ct)
     {
-        var ok = await _service.UpdateAsync(id, dto, ct);
+        var ok = await _service.UpdateProfileAsync(id, dto, ct);
         return ok ? NoContent() : NotFound();
     }
 
@@ -79,6 +80,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
         var ok = await _service.DeleteAsync(id, ct);

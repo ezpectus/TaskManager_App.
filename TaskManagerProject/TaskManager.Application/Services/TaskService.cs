@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using TaskManager.Application.DTOs.Common;
 using TaskManager.Application.DTOs.Tasks;
 using TaskManager.Application.Interfaces;
@@ -16,13 +17,15 @@ public class TaskService : ITaskService
     private readonly IUserRepository _userRepo;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<TaskService> _logger;
 
-    public TaskService(ITaskRepository repo, IUserRepository userRepo, IMapper mapper, IUnitOfWork unitOfWork)
+    public TaskService(ITaskRepository repo, IUserRepository userRepo, IMapper mapper, IUnitOfWork unitOfWork, ILogger<TaskService> logger)
     {
         _repo = repo;
         _userRepo = userRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<Guid> CreateAsync(CreateTaskRequest dto, CancellationToken ct)
@@ -34,6 +37,7 @@ public class TaskService : ITaskService
 
         await _repo.AddAsync(entity, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("Task created: '{Title}' (Id: {TaskId}, Priority: {Priority})", entity.Title, entity.Id, entity.Priority);
         return entity.Id;
     }
 
@@ -70,7 +74,20 @@ public class TaskService : ITaskService
         var task = await _repo.GetByIdAsync(id, ct);
         if (task == null) return false;
 
-        _mapper.Map(dto, task);
+        if (dto.Title != null || dto.Description != null || dto.Priority.HasValue || dto.Deadline.HasValue)
+        {
+            task.UpdateDetails(
+                dto.Title ?? task.Title,
+                dto.Description ?? task.Description,
+                dto.Priority ?? task.Priority,
+                dto.Deadline);
+        }
+
+        if (dto.Status.HasValue && dto.Status.Value != task.Status)
+        {
+            task.ChangeStatus(dto.Status.Value);
+        }
+
         task.Touch();
 
         await _repo.UpdateAsync(task, ct);
@@ -86,6 +103,7 @@ public class TaskService : ITaskService
         task.SoftDelete();
         await _repo.UpdateAsync(task, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("Task soft-deleted: '{Title}' (Id: {TaskId})", task.Title, task.Id);
         return true;
     }
 
@@ -100,6 +118,7 @@ public class TaskService : ITaskService
         task.AssignTo(user);
         await _repo.UpdateAsync(task, ct);
         await _unitOfWork.SaveChangesAsync(ct);
+        _logger.LogInformation("Task '{Title}' (Id: {TaskId}) assigned to user '{Username}' (Id: {UserId})", task.Title, task.Id, user.Username, user.Id);
         return true;
     }
 }

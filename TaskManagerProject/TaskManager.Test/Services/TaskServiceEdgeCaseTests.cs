@@ -24,7 +24,7 @@ public class TaskServiceEdgeCaseTests
         _userRepoMock = new Mock<IUserRepository>();
         _uowMock = new Mock<IUnitOfWork>();
         _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), NullLoggerFactory.Instance).CreateMapper();
-        _service = new TaskService(_repoMock.Object, _userRepoMock.Object, _mapper, _uowMock.Object);
+        _service = new TaskService(_repoMock.Object, _userRepoMock.Object, _mapper, _uowMock.Object, NullLogger<TaskService>.Instance);
     }
 
     [Fact]
@@ -162,5 +162,107 @@ public class TaskServiceEdgeCaseTests
         Assert.True(task.IsDeleted);
         Assert.NotNull(task.DeletedAt);
         Assert.True(task.DeletedAt <= DateTime.UtcNow);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_UpdateDeadline_When_DeadlineProvided()
+    {
+        var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium);
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(task);
+
+        var newDeadline = new DateTime(2026, 12, 31);
+        var dto = new UpdateTaskRequest { Deadline = newDeadline };
+        var result = await _service.UpdateAsync(Guid.NewGuid(), dto, CancellationToken.None);
+
+        Assert.True(result);
+        Assert.Equal(newDeadline, task.Deadline);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_PreserveDeadline_When_DeadlineNotProvided()
+    {
+        var originalDeadline = new DateTime(2026, 6, 15);
+        var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium, originalDeadline);
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(task);
+
+        var dto = new UpdateTaskRequest { Title = "Updated Title" };
+        var result = await _service.UpdateAsync(Guid.NewGuid(), dto, CancellationToken.None);
+
+        Assert.True(result);
+        Assert.Equal(originalDeadline, task.Deadline);
+        Assert.Equal("Updated Title", task.Title);
+    }
+
+    [Fact]
+    public async Task CreateAsync_Should_MapDeadline_From_Dto()
+    {
+        var deadline = new DateTime(2026, 12, 31);
+        var dto = new CreateTaskRequest
+        {
+            Title = "Deadline Task",
+            Description = "Task with deadline",
+            Priority = TaskPriority.High,
+            Deadline = deadline,
+        };
+
+        TaskItem? captured = null;
+        _repoMock.Setup(r => r.AddAsync(It.IsAny<TaskItem>(), It.IsAny<CancellationToken>()))
+            .Callback<TaskItem, CancellationToken>((t, _) => captured = t)
+            .Returns(Task.CompletedTask);
+
+        await _service.CreateAsync(dto, CancellationToken.None);
+
+        Assert.NotNull(captured);
+        Assert.Equal(deadline, captured!.Deadline);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_ReturnFalse_When_TaskNotFound()
+    {
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((TaskItem?)null);
+
+        var dto = new UpdateTaskRequest { Title = "Updated" };
+        var result = await _service.UpdateAsync(Guid.NewGuid(), dto, CancellationToken.None);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_Should_ReturnFalse_When_TaskNotFound()
+    {
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((TaskItem?)null);
+
+        var result = await _service.DeleteAsync(Guid.NewGuid(), CancellationToken.None);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task AssignAsync_Should_ReturnFalse_When_TaskNotFound()
+    {
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((TaskItem?)null);
+
+        var result = await _service.AssignAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task AssignAsync_Should_ReturnFalse_When_UserNotFound()
+    {
+        var task = TaskItem.Create("T", "D", TaskPriority.Medium);
+        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(task);
+        _userRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        var result = await _service.AssignAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None);
+
+        Assert.False(result);
     }
 }

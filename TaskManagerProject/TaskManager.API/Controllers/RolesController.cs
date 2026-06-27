@@ -31,6 +31,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(RoleDto dto, CancellationToken ct)
     {
         var id = await _service.CreateAsync(dto, ct);
@@ -38,6 +39,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(Guid id, RoleDto dto, CancellationToken ct)
     {
         var ok = await _service.UpdateAsync(id, dto, ct);
@@ -45,6 +47,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
         var ok = await _service.DeleteAsync(id, ct);

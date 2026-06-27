@@ -24,7 +24,7 @@ public class TaskServiceTests
         _userRepoMock = new Mock<IUserRepository>();
         _uowMock = new Mock<IUnitOfWork>();
         _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), NullLoggerFactory.Instance).CreateMapper();
-        _service = new TaskService(_repoMock.Object, _userRepoMock.Object, _mapper, _uowMock.Object);
+        _service = new TaskService(_repoMock.Object, _userRepoMock.Object, _mapper, _uowMock.Object, NullLogger<TaskService>.Instance);
     }
 
     [Fact]

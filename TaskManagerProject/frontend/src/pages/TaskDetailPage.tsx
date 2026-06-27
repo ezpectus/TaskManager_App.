@@ -7,7 +7,8 @@ import type { TaskDto, SubtaskDto } from '../types'
 import { useToast } from '../context/ToastContext'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Markdown from '../components/Markdown'
-import { ArrowLeft, Trash2, Save, Plus, X, MessageSquare, ListChecks } from 'lucide-react'
+import { ArrowLeft, Trash2, Save, Plus, X, MessageSquare, ListChecks, Calendar, ArrowUp, ArrowDown, Minus } from 'lucide-react'
+import { getRelativeDeadline } from '../utils/deadline'
 
 const STATUS_COLORS: Record<string, string> = {
   Todo: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -21,6 +22,12 @@ const PRIORITY_COLORS: Record<string, string> = {
   High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 }
 
+const PRIORITY_ICONS: Record<string, React.ReactNode> = {
+  High: <ArrowUp size={12} className="text-red-500" />,
+  Medium: <Minus size={12} className="text-orange-500" />,
+  Low: <ArrowDown size={12} className="text-gray-500" />,
+}
+
 export default function TaskDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -30,6 +37,7 @@ export default function TaskDetailPage() {
   const [editing, setEditing] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [deadline, setDeadline] = useState('')
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('')
   const [newComment, setNewComment] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -41,6 +49,7 @@ export default function TaskDetailPage() {
       setTask(data)
       setTitle(data.title)
       setDescription(data.description)
+      setDeadline(data.deadline && !data.deadline.startsWith('0001-01-01') ? data.deadline.split('T')[0] : '')
     } catch {
       showToast('Failed to load task', 'error')
     } finally {
@@ -55,7 +64,7 @@ export default function TaskDetailPage() {
   const handleSave = async () => {
     if (!id || !task) return
     try {
-      await taskService.update(id, { title, description, priority: task.priority })
+      await taskService.update(id, { title, description, priority: task.priority, deadline: deadline ? new Date(deadline).toISOString() : undefined })
       showToast('Task updated', 'success')
       setEditing(false)
       fetchTask()
@@ -90,7 +99,7 @@ export default function TaskDetailPage() {
   const handleToggleSubtask = async (subtask: SubtaskDto) => {
     try {
       await subtaskService.update(subtask.id, {
-        ...subtask,
+        title: subtask.title,
         isCompleted: !subtask.isCompleted,
       })
       fetchTask()
@@ -184,9 +193,29 @@ export default function TaskDetailPage() {
           </div>
         )}
 
+        {editing ? (
+          <div className="mb-4">
+            <label className="mb-1 block text-sm font-medium">Deadline</label>
+            <input type="date" className="input max-w-xs" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+          </div>
+        ) : (
+          (() => {
+            const dl = getRelativeDeadline(task.deadline, task.status)
+            return dl ? (
+              <div className={`mb-4 flex items-center gap-2 text-sm ${dl.className}`}>
+                <Calendar size={16} />
+                <span>
+                  {dl.text}
+                  {dl.isOverdue && ' (overdue)'}
+                </span>
+              </div>
+            ) : null
+          })()
+        )}
+
         <div className="mb-6 flex gap-2">
           <span className={`badge ${STATUS_COLORS[task.status]}`}>{task.status}</span>
-          <span className={`badge ${PRIORITY_COLORS[task.priority]}`}>{task.priority}</span>
+          <span className={`badge ${PRIORITY_COLORS[task.priority]}`}>{PRIORITY_ICONS[task.priority]} {task.priority}</span>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

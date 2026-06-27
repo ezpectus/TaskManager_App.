@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { authService } from '../services/authService'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useTheme } from '../context/ThemeContext'
-import { CheckSquare, Moon, Sun } from 'lucide-react'
+import { CheckSquare, Moon, Sun, Info } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -75,6 +75,21 @@ export default function LoginPage() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        <div className="mt-4 rounded-lg border border-border bg-secondary/50 p-3 text-xs text-muted-foreground">
+          <div className="mb-1 flex items-center gap-1 font-medium text-foreground">
+            <Info size={14} /> Demo Accounts
+          </div>
+          <p>Admin: <code className="font-mono">admin@taskmanager.com</code> / <code className="font-mono">Admin123!</code></p>
+          <p>Demo: <code className="font-mono">demo@taskmanager.com</code> / <code className="font-mono">Demo123!</code></p>
+        </div>
+
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          Don't have an account?{' '}
+          <Link to="/register" className="font-medium text-primary hover:underline">
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   )

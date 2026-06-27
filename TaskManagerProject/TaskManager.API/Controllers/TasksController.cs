@@ -50,6 +50,10 @@ public class TasksController : ControllerBase
         [FromQuery] string? searchTerm = null,
         CancellationToken ct = default)
     {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 20;
+        if (pageSize > 100) pageSize = 100;
+
         if (status.HasValue || priority.HasValue || userId.HasValue ||
             !string.IsNullOrWhiteSpace(searchTerm) || page != 1 || pageSize != 20)
         {

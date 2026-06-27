@@ -29,6 +29,12 @@ public class UserRepository : IUserRepository
                 .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.Email == email, ct);
 
+    public async Task<User?> GetByUsernameAsync(string username, CancellationToken ct)
+        => await _context.Users
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Username == username, ct);
+
     public async Task<IEnumerable<User>> GetAllAsync(CancellationToken ct)
         => await _context.Users
             .Include(u => u.UserRoles)

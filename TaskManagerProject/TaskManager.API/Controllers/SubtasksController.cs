@@ -38,7 +38,7 @@ public class SubtasksController : ControllerBase
         => Ok(await _service.GetAllByTaskIdAsync(taskId, ct));
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, SubtaskDto dto, CancellationToken ct)
+    public async Task<IActionResult> Update(Guid id, UpdateSubtaskRequest dto, CancellationToken ct)
     {
         var ok = await _service.UpdateAsync(id, dto, ct);
         return ok ? NoContent() : NotFound();

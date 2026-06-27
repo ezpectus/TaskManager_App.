@@ -43,13 +43,17 @@ public class SubtaskService : ISubtaskService
         return _mapper.Map<IEnumerable<SubtaskDto>>(list);
     }
 
-    public async Task<bool> UpdateAsync(Guid id, SubtaskDto dto, CancellationToken ct)
+    public async Task<bool> UpdateAsync(Guid id, UpdateSubtaskRequest dto, CancellationToken ct)
     {
         var e = await _repo.GetByIdAsync(id, ct);
         if (e == null) return false;
 
-        e.Rename(dto.Title);
-        if (dto.IsCompleted) e.Complete(); else e.Reopen();
+        if (dto.Title != null)
+            e.Rename(dto.Title);
+        if (dto.IsCompleted.HasValue)
+        {
+            if (dto.IsCompleted.Value) e.Complete(); else e.Reopen();
+        }
 
         await _repo.UpdateAsync(e, ct);
         await _unitOfWork.SaveChangesAsync(ct);

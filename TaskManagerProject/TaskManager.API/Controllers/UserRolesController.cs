@@ -19,6 +19,7 @@ public class UserRolesController : ControllerBase
     }
 
     [HttpPost("{userId:guid}/{roleId:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add(Guid userId, Guid roleId, CancellationToken ct)
     {
         await _service.AssignRoleAsync(userId, roleId, ct);
@@ -26,6 +27,7 @@ public class UserRolesController : ControllerBase
     }
 
     [HttpDelete("{userId:guid}/{roleId:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Remove(Guid userId, Guid roleId, CancellationToken ct)
     {
         await _service.RemoveRoleAsync(userId, roleId, ct);

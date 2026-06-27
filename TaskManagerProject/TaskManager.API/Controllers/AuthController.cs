@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskManager.Application.DTOs.Auth;
 using TaskManager.Application.Interfaces;
 
@@ -10,6 +11,7 @@ namespace TaskManager.API.Controllers;
 [Route("api/v{version:apiVersion}/auth")]
 [ApiVersion("1.0")]
 [AllowAnonymous]
+[EnableRateLimiting("auth")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -43,5 +45,17 @@ public class AuthController : ControllerBase
     {
         var result = await _authService.RefreshAsync(request.RefreshToken, ct);
         return result == null ? Unauthorized() : Ok(result);
+    }
+
+    /// <summary>
+    /// Revoke a refresh token (logout)
+    /// </summary>
+    /// <param name="request">Refresh token to revoke</param>
+    /// <param name="ct">Cancellation token</param>
+    [HttpPost("revoke")]
+    public async Task<IActionResult> Revoke(RefreshTokenRequest request, CancellationToken ct)
+    {
+        var ok = await _authService.RevokeAsync(request.RefreshToken, ct);
+        return ok ? NoContent() : NotFound();
     }
 }

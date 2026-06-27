@@ -27,6 +27,7 @@ public class ActivityLogInterceptor : SaveChangesInterceptor
             {
                 Id = Guid.NewGuid(),
                 TaskId = entry.Entity.Id,
+                UserId = entry.Entity.UserId,
                 Timestamp = DateTime.UtcNow,
                 ActionType = entry.State switch
                 {

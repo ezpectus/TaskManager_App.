@@ -51,7 +51,7 @@ The project is a full-stack application with both backend and frontend:
 - Swagger/OpenAPI with XML comments and JWT Bearer scheme
 - CORS and health checks
 - DB seeding on startup
-- Unit tests (xUnit + Moq): 60 tests
+- Unit tests (xUnit + Moq): 78 tests
 
 **Frontend:**
 - React 19 + TypeScript + TailwindCSS + Vite
@@ -297,7 +297,7 @@ All planned v1 features are now implemented:
 - Pagination and filtering — done
 - Soft delete — done
 - API versioning — done
-- Unit tests — done (60 tests)
+- Unit tests — done (78 tests)
 - Refresh tokens — done
 - Password change endpoint — done
 - User profile update — done

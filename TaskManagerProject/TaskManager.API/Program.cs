@@ -91,7 +91,12 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-var jwtKey = builder.Configuration["Jwt:Key"] ?? "TaskManager_DefaultSecretKey_2026_Min32Chars!";
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    jwtKey = "TaskManager_DefaultSecretKey_2026_Min32Chars!";
+    Log.Logger.Warning("Jwt:Key not configured — using insecure default key. Set Jwt:Key in configuration for production.");
+}
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "TaskManager";
 var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "TaskManager";
 
@@ -116,13 +121,25 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        if (builder.Environment.IsProduction())
+        {
+            var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
     });
 });
 
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<TaskManager.Infrastructure.Persistence.Contexts.ApplicationDbContext>();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -134,6 +151,16 @@ builder.Services.AddRateLimiter(options =>
                 TokenLimit = 100,
                 TokensPerPeriod = 100,
                 ReplenishmentPeriod = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+
+    options.AddPolicy("auth", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));
 });
@@ -162,7 +189,7 @@ app.UseExceptionHandler(appBuilder =>
         {
             ArgumentException => 400,
             UnauthorizedAccessException => 401,
-            InvalidOperationException => 404,
+            InvalidOperationException => 409,
             _ => 500
         };
 
@@ -178,6 +205,11 @@ app.UseExceptionHandler(appBuilder =>
         await context.Response.WriteAsync(JsonSerializer.Serialize(response));
     });
 });
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors();
 app.UseResponseCaching();

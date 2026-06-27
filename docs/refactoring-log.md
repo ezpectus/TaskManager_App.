@@ -704,7 +704,7 @@ TaskManagerSolution/
 | H-10 | Full CRUD for all controllers | Done |
 | H-11 | [Authorize] + [AllowAnonymous] applied | Done |
 | H-12 | Pagination and filtering for Tasks (PagedResult) | Done |
-| H-13 | Unit tests for services (xUnit + Moq, 60 tests) | Done |
+| H-13 | Unit tests for services (xUnit + Moq, 78 tests) | Done |
 | M-01 | Renamed project Infrastucture → Infrastructure | Done |
 | M-02 | Domain logic in entities (DDD): Create, ChangeStatus, SoftDelete | Done |
 | M-03 | Namespace cleanup (file-scoped) | Done |

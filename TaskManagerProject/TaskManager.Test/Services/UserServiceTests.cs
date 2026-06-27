@@ -22,7 +22,7 @@ public class UserServiceTests
         _repoMock = new Mock<IUserRepository>();
         _uowMock = new Mock<IUnitOfWork>();
         _mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), NullLoggerFactory.Instance).CreateMapper();
-        _service = new UserService(_repoMock.Object, _uowMock.Object, _mapper);
+        _service = new UserService(_repoMock.Object, _uowMock.Object, _mapper, NullLogger<UserService>.Instance);
     }
 
     [Fact]

@@ -42,7 +42,7 @@ public class CommentServiceTests
         _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Comment?)null);
 
-        var result = await _service.UpdateAsync(Guid.NewGuid(), new CreateCommentRequest(), CancellationToken.None);
+        var result = await _service.UpdateAsync(Guid.NewGuid(), new UpdateCommentRequest(), CancellationToken.None);
 
         Assert.False(result);
     }
@@ -54,7 +54,7 @@ public class CommentServiceTests
         _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(comment);
 
-        var dto = new CreateCommentRequest { Content = "New content" };
+        var dto = new UpdateCommentRequest { Content = "New content" };
         var result = await _service.UpdateAsync(Guid.NewGuid(), dto, CancellationToken.None);
 
         Assert.True(result);

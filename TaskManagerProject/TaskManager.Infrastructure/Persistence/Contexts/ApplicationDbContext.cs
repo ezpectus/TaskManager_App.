@@ -26,6 +26,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ActivityLog> ActivityLogs { get; set; }
     public DbSet<TaskTag> TaskTags { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

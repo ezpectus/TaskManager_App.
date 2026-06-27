@@ -28,6 +28,11 @@ export interface CreateSubtaskRequest {
   taskId: string
 }
 
+export interface UpdateSubtaskRequest {
+  title?: string
+  isCompleted?: boolean
+}
+
 export interface CommentDto {
   id: string
   content: string
@@ -42,6 +47,10 @@ export interface CreateCommentRequest {
   userId?: string | null
 }
 
+export interface UpdateCommentRequest {
+  content: string
+}
+
 export interface CreateTaskRequest {
   title: string
   description: string
@@ -54,6 +63,13 @@ export interface UpdateTaskRequest {
   title: string
   description: string
   priority: TaskPriority
+  deadline?: string
+}
+
+export interface RegisterRequest {
+  username: string
+  email: string
+  password: string
 }
 
 export interface PagedResult<T> {

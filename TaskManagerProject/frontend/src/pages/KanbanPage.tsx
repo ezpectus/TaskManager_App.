@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { taskService } from '../services/taskService'
 import type { TaskDto, TaskStatus } from '../types'
+import { getRelativeDeadline, getSmartScore } from '../utils/deadline'
 import { useToast } from '../context/ToastContext'
-import { Plus, Trello } from 'lucide-react'
+import { Plus, Trello, Calendar, ArrowUp, ArrowDown, Minus } from 'lucide-react'
 
 const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: 'Todo', label: 'To Do', color: 'border-t-blue-500' },
@@ -15,6 +16,12 @@ const PRIORITY_BADGE: Record<string, string> = {
   Low: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
   Medium: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
   High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+}
+
+const PRIORITY_ICONS: Record<string, React.ReactNode> = {
+  High: <ArrowUp size={10} className="text-red-500" />,
+  Medium: <Minus size={10} className="text-orange-500" />,
+  Low: <ArrowDown size={10} className="text-gray-500" />,
 }
 
 export default function KanbanPage() {
@@ -94,7 +101,12 @@ export default function KanbanPage() {
   return (
     <div className="mx-auto max-w-7xl p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Kanban Board</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold">Kanban Board</h1>
+          {!loading && (
+            <span className="badge bg-secondary text-secondary-foreground">{tasks.length}</span>
+          )}
+        </div>
         <button className="btn-primary" onClick={() => navigate('/')}>
           <Plus size={18} /> Dashboard
         </button>
@@ -103,6 +115,7 @@ export default function KanbanPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {COLUMNS.map((col) => {
           const colTasks = tasks.filter((t) => t.status === col.status)
+            .sort((a, b) => getSmartScore(b).total - getSmartScore(a).total)
           return (
             <div
               key={col.status}
@@ -130,8 +143,17 @@ export default function KanbanPage() {
                   >
                     <h3 className="mb-1 font-medium">{task.title}</h3>
                     <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">{task.description}</p>
+                    {(() => {
+                      const dl = getRelativeDeadline(task.deadline, task.status)
+                      return dl ? (
+                        <p className={`mb-2 flex items-center gap-1 text-xs ${dl.className}`}>
+                          <Calendar size={11} />
+                          {dl.text}
+                        </p>
+                      ) : null
+                    })()}
                     <div className="flex items-center justify-between">
-                      <span className={`badge ${PRIORITY_BADGE[task.priority]}`}>{task.priority}</span>
+                      <span className={`badge ${PRIORITY_BADGE[task.priority]}`}>{PRIORITY_ICONS[task.priority]} {task.priority}</span>
                       <div className="flex items-center gap-1">
                         {task.subtasks.length > 0 && (
                           <span className="text-xs text-muted-foreground">
