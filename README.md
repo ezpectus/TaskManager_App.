@@ -360,6 +360,8 @@ TaskManagerSolution/
 │   ├── future.md                        # Roadmap (6 phases)
 │   ├── ideas.md                         # Extension ideas (12 detailed specs)
 │   ├── refactoring-log.md               # Historical audit & refactoring record
+│   ├── changelog.md                     # Version history
+│   ├── contributing.md                  # Contribution guidelines
 │   └── adr/                             # Architecture Decision Records
 │       ├── 001-postgresql.md
 │       ├── 002-clean-architecture.md
@@ -374,8 +376,6 @@ TaskManagerSolution/
 ├── nginx.conf                           # SPA routing + API proxy
 ├── start.bat                            # One-click startup (Windows)
 ├── start.sh                             # One-click startup (Linux)
-├── CHANGELOG.md                         # Version history
-├── CONTRIBUTING.md                      # Contribution guidelines
 └── README.md                            # This file
 ```
 
@@ -478,8 +478,8 @@ dotnet test TaskManagerProject\TaskManagerSolution.sln --logger "console;verbosi
 - [Extension Ideas](docs/ideas.md) — 12 detailed feature specifications
 - [Refactoring Log](docs/refactoring-log.md) — Historical audit & fix record (41 items, all completed)
 - [Architecture Decision Records](docs/adr/) — ADRs for key technology choices
-- [Changelog](CHANGELOG.md) — Version history
-- [Contributing](CONTRIBUTING.md) — Contribution guidelines
+- [Changelog](docs/changelog.md) — Version history
+- [Contributing](docs/contributing.md) — Contribution guidelines
 
 ---
 
