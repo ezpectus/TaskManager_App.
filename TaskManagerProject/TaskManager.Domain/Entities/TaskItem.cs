@@ -20,7 +20,7 @@ public class TaskItem
     public bool IsDeleted { get; private set; }
     public DateTime? DeletedAt { get; private set; }
 
-    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
+    public uint RowVersion { get; set; }
 
     public Guid? UserId { get; set; }
     public User? User { get; set; }
