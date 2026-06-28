@@ -21,15 +21,15 @@ public class TaskTagsController : ControllerBase
     [HttpPost("{taskId:guid}/{tagId:guid}")]
     public async Task<IActionResult> Add(Guid taskId, Guid tagId, CancellationToken ct)
     {
-        await _service.AddTagToTaskAsync(taskId, tagId, ct);
-        return NoContent();
+        var ok = await _service.AddTagToTaskAsync(taskId, tagId, ct);
+        return ok ? NoContent() : Conflict("Tag is already assigned to this task");
     }
 
     [HttpDelete("{taskId:guid}/{tagId:guid}")]
     public async Task<IActionResult> Remove(Guid taskId, Guid tagId, CancellationToken ct)
     {
-        await _service.RemoveTagFromTaskAsync(taskId, tagId, ct);
-        return NoContent();
+        var ok = await _service.RemoveTagFromTaskAsync(taskId, tagId, ct);
+        return ok ? NoContent() : NotFound();
     }
 
     [HttpGet("task/{taskId:guid}")]

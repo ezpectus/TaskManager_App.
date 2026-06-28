@@ -30,10 +30,11 @@ public class TaskService : ITaskService
 
     public async Task<Guid> CreateAsync(CreateTaskRequest dto, CancellationToken ct)
     {
-        var entity = _mapper.Map<TaskItem>(dto);
-        entity.Id = Guid.NewGuid();
-        entity.CreatedAt = DateTime.UtcNow;
-        entity.Touch();
+        var deadline = dto.Deadline;
+        var entity = TaskItem.Create(dto.Title, dto.Description, dto.Priority, deadline);
+
+        if (dto.UserId.HasValue)
+            entity.UserId = dto.UserId;
 
         await _repo.AddAsync(entity, ct);
         await _unitOfWork.SaveChangesAsync(ct);

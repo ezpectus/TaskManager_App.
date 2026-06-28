@@ -3,7 +3,6 @@ import { userService } from '../services/userService'
 import { taskService } from '../services/taskService'
 import type { UserDto, TaskDto } from '../types'
 import { useToast } from '../context/ToastContext'
-import { useAuth } from '../context/AuthContext'
 import { User as UserIcon, Mail, CheckSquare, Clock, CheckCircle, Save, KeyRound, X, Edit, Calendar } from 'lucide-react'
 
 export default function ProfilePage() {
@@ -19,7 +18,6 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const { showToast } = useToast()
-  const { logout } = useAuth()
 
   useEffect(() => {
     const fetch = async () => {

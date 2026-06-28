@@ -5,7 +5,7 @@ import { authService } from '../services/authService'
 interface AuthContextValue {
   isAuthenticated: boolean
   login: (token: string) => void
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -17,8 +17,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(true)
   }
 
-  const logout = () => {
-    authService.logout()
+  const logout = async () => {
+    await authService.logout()
     setIsAuthenticated(false)
   }
 

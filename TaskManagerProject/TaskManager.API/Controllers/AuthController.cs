@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Authenticate user and receive JWT token + refresh token
     /// </summary>
-    /// <param name="request">Login credentials (email + password)</param>
+    /// <param name="request">Login credentials (email or username + password)</param>
     /// <param name="ct">Cancellation token</param>
     /// <returns>JWT token, refresh token, user info</returns>
     [HttpPost("login")]

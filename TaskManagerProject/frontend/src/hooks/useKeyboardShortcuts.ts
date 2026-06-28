@@ -1,15 +1,36 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export function useKeyboardShortcuts() {
   const navigate = useNavigate()
+  const pendingG = useRef(false)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return
       if (e.ctrlKey || e.metaKey || e.altKey) return
 
-      switch (e.key.toLowerCase()) {
+      const key = e.key.toLowerCase()
+
+      if (pendingG.current) {
+        pendingG.current = false
+        switch (key) {
+          case 'd':
+            navigate('/')
+            return
+          case 'k':
+            navigate('/kanban')
+            return
+          case 'a':
+            navigate('/analytics')
+            return
+          case 'p':
+            navigate('/profile')
+            return
+        }
+      }
+
+      switch (key) {
         case 'n':
           navigate('/?new=true')
           break
@@ -21,6 +42,8 @@ export function useKeyboardShortcuts() {
           }
           break
         case 'g':
+          pendingG.current = true
+          setTimeout(() => { pendingG.current = false }, 1000)
           break
         case 'd':
           navigate('/')
@@ -29,14 +52,6 @@ export function useKeyboardShortcuts() {
           navigate('/kanban')
           break
         case '?':
-          alert(
-            'Keyboard shortcuts:\n\n' +
-            'N — New task\n' +
-            '/ — Focus search\n' +
-            'G then D — Go to Dashboard\n' +
-            'G then K — Go to Kanban\n' +
-            '? — Show this help'
-          )
           break
       }
     }

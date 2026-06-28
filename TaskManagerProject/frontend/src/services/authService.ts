@@ -35,7 +35,18 @@ export const authService = {
     }
   },
 
-  logout: () => {
+  logout: async (): Promise<void> => {
+    const refreshToken = localStorage.getItem('refreshToken')
+    if (refreshToken) {
+      try {
+        await apiFetch('/auth/revoke', {
+          method: 'POST',
+          body: JSON.stringify({ refreshToken } as RefreshTokenRequest),
+        })
+      } catch {
+        // ignore — token may already be invalid
+      }
+    }
     clearAuthToken()
     localStorage.removeItem('refreshToken')
   },

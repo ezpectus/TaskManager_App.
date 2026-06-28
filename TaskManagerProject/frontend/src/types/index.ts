@@ -55,7 +55,7 @@ export interface CreateTaskRequest {
   title: string
   description: string
   priority: TaskPriority
-  deadline: string
+  deadline?: string
   userId?: string | null
 }
 

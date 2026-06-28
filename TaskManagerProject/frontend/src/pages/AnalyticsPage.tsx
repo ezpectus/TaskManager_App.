@@ -49,7 +49,7 @@ export default function AnalyticsPage() {
     High: tasks.filter((t) => t.priority === 'High').length,
   }
   const completionRate = total > 0 ? Math.round((byStatus.Done / total) * 100) : 0
-  const overdue = tasks.filter((t) => t.status !== 'Done' && new Date(t.deadline) < new Date()).length
+  const overdue = tasks.filter((t) => t.status !== 'Done' && t.deadline && !t.deadline.startsWith('0001-01-01') && new Date(t.deadline) < new Date()).length
 
   const maxStatus = Math.max(...Object.values(byStatus), 1)
   const maxPriority = Math.max(...Object.values(byPriority), 1)

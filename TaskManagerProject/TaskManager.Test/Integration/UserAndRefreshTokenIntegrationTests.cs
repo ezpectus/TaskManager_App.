@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Entities;
 using TaskManager.Infrastructure.Persistence.Contexts;
 
+
 namespace TaskManager.Test.Integration;
 
 public class UserAndRefreshTokenIntegrationTests : IClassFixture<DatabaseFixture>, IAsyncLifetime
@@ -15,6 +16,7 @@ public class UserAndRefreshTokenIntegrationTests : IClassFixture<DatabaseFixture
 
     public Task InitializeAsync()
     {
+        Skip.IfNot(_fixture.IsAvailable, "Docker not available");
         _fixture.Context.RefreshTokens.RemoveRange(_fixture.Context.RefreshTokens);
         _fixture.Context.Users.RemoveRange(_fixture.Context.Users);
         _fixture.Context.SaveChanges();
@@ -23,7 +25,7 @@ public class UserAndRefreshTokenIntegrationTests : IClassFixture<DatabaseFixture
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    [Fact]
+    [SkippableFact]
     public async Task RefreshToken_Should_Persist_And_Be_Active()
     {
         var user = new User
@@ -57,7 +59,7 @@ public class UserAndRefreshTokenIntegrationTests : IClassFixture<DatabaseFixture
         Assert.Null(retrieved.RevokedAt);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task RefreshToken_Revoke_Should_Set_RevokedAt()
     {
         var user = new User
@@ -95,7 +97,7 @@ public class UserAndRefreshTokenIntegrationTests : IClassFixture<DatabaseFixture
         Assert.NotNull(retrieved.RevokedAt);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Username_UniqueIndex_Should_Prevent_Duplicates()
     {
         var user1 = new User

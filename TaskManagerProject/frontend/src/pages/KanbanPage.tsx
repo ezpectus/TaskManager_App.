@@ -42,7 +42,12 @@ export default function KanbanPage() {
     }
   }, [showToast])
 
-  const handleDragStart = (e: React.DragEvent, taskId: string) => {
+  const handleDragStart = (e: React.DragEvent, taskId: string, currentStatus: TaskStatus) => {
+    if (currentStatus === 'Done') {
+      e.preventDefault()
+      showToast('Completed tasks cannot be reopened', 'info')
+      return
+    }
     setDraggedId(taskId)
     e.dataTransfer.effectAllowed = 'move'
   }
@@ -136,7 +141,7 @@ export default function KanbanPage() {
                   <div
                     key={task.id}
                     draggable
-                    onDragStart={(e) => handleDragStart(e, task.id)}
+                    onDragStart={(e) => handleDragStart(e, task.id, task.status)}
                     onDragEnd={handleDragEnd}
                     className={`card cursor-pointer p-3 transition-all hover:shadow-md ${draggedId === task.id ? 'opacity-40' : ''}`}
                     onClick={() => navigate(`/tasks/${task.id}`)}
@@ -163,8 +168,16 @@ export default function KanbanPage() {
                         <select
                           className="rounded border bg-transparent px-1 py-0.5 text-xs"
                           onClick={(e) => e.stopPropagation()}
-                          onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatus)}
+                          onChange={(e) => {
+                            if (task.status === 'Done' && e.target.value !== 'Done') {
+                              showToast('Completed tasks cannot be reopened', 'info')
+                              e.target.value = task.status
+                              return
+                            }
+                            handleStatusChange(task.id, e.target.value as TaskStatus)
+                          }}
                           value={task.status}
+                          disabled={task.status === 'Done'}
                         >
                           <option value="Todo">Todo</option>
                           <option value="InProgress">In Progress</option>

@@ -7,7 +7,7 @@ import { useTheme } from '../context/ThemeContext'
 import { CheckSquare, Moon, Sun, Info } from 'lucide-react'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -19,12 +19,12 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      const res = await authService.login({ email, password })
+      const res = await authService.login({ email: identifier, password })
       login(res.token)
       showToast('Welcome back!', 'success')
       navigate('/')
     } catch {
-      showToast('Invalid email or password', 'error')
+      showToast('Invalid email/username or password', 'error')
     } finally {
       setLoading(false)
     }
@@ -49,13 +49,13 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium">Email</label>
+            <label className="mb-1 block text-sm font-medium">Email or Username</label>
             <input
-              type="email"
+              type="text"
               className="input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@example.com"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="user@example.com or username"
               required
               autoFocus
             />

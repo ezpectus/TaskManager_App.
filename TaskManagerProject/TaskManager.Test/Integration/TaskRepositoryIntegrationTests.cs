@@ -3,6 +3,8 @@ using TaskManager.Domain.Entities;
 using TaskManager.Domain.Enums;
 using TaskManager.Infrastructure.Persistence.Contexts;
 
+using TaskStatus = TaskManager.Domain.Enums.TaskStatus;
+
 namespace TaskManager.Test.Integration;
 
 public class TaskRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IAsyncLifetime
@@ -16,6 +18,7 @@ public class TaskRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IA
 
     public Task InitializeAsync()
     {
+        Skip.IfNot(_fixture.IsAvailable, "Docker not available");
         _fixture.Context.Tasks.RemoveRange(_fixture.Context.Tasks);
         _fixture.Context.Users.RemoveRange(_fixture.Context.Users);
         _fixture.Context.SaveChanges();
@@ -24,7 +27,7 @@ public class TaskRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IA
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    [Fact]
+    [SkippableFact]
     public async Task AddAsync_Should_Persist_Task_To_Database()
     {
         var user = new User
@@ -38,7 +41,8 @@ public class TaskRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IA
         _fixture.Context.Users.Add(user);
         await _fixture.Context.SaveChangesAsync();
 
-        var task = TaskItem.Create("Integration Test Task", "Test Desc", TaskPriority.High, user.Id);
+        var task = TaskItem.Create("Integration Test Task", "Test Desc", TaskPriority.High);
+        task.AssignTo(user);
         _fixture.Context.Tasks.Add(task);
         await _fixture.Context.SaveChangesAsync();
 
@@ -52,7 +56,7 @@ public class TaskRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IA
         Assert.Equal(user.Id, retrieved.UserId);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task SoftDelete_Should_Exclude_From_Query_Filter()
     {
         var user = new User
@@ -66,7 +70,8 @@ public class TaskRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IA
         _fixture.Context.Users.Add(user);
         await _fixture.Context.SaveChangesAsync();
 
-        var task = TaskItem.Create("Task To Delete", "Desc", TaskPriority.Medium, user.Id);
+        var task = TaskItem.Create("Task To Delete", "Desc", TaskPriority.Medium);
+        task.AssignTo(user);
         _fixture.Context.Tasks.Add(task);
         await _fixture.Context.SaveChangesAsync();
 
@@ -81,7 +86,7 @@ public class TaskRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IA
         Assert.Null(retrieved);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task ChangeStatus_Should_Update_Status_In_Database()
     {
         var user = new User
@@ -95,7 +100,8 @@ public class TaskRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IA
         _fixture.Context.Users.Add(user);
         await _fixture.Context.SaveChangesAsync();
 
-        var task = TaskItem.Create("Status Test", "Desc", TaskPriority.Low, user.Id);
+        var task = TaskItem.Create("Status Test", "Desc", TaskPriority.Low);
+        task.AssignTo(user);
         _fixture.Context.Tasks.Add(task);
         await _fixture.Context.SaveChangesAsync();
 

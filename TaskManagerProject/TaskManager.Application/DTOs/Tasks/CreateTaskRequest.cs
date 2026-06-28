@@ -9,7 +9,7 @@ public class CreateTaskRequest
     public string Description { get; set; } = null!;
     public Domain.Enums.TaskStatus Status { get; set; } = Domain.Enums.TaskStatus.Todo;
     public TaskPriority Priority { get; set; } = TaskPriority.Medium;
-    public DateTime Deadline { get; set; }
+    public DateTime? Deadline { get; set; }
 
     public Guid? UserId { get; set; }
 }

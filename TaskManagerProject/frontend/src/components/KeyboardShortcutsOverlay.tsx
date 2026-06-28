@@ -12,29 +12,40 @@ const SHORTCUTS = [
   { keys: ['?'], description: 'Toggle this shortcuts panel' },
 ]
 
-export default function KeyboardShortcutsOverlay() {
-  const [open, setOpen] = useState(false)
+interface KeyboardShortcutsOverlayProps {
+  open?: boolean
+  onClose?: () => void
+}
+
+export default function KeyboardShortcutsOverlay({ open: externalOpen, onClose }: KeyboardShortcutsOverlayProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = externalOpen ?? internalOpen
+  const close = () => {
+    if (onClose) onClose()
+    else setInternalOpen(false)
+  }
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === '?' && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
         e.preventDefault()
-        setOpen((prev) => !prev)
+        setInternalOpen((prev) => !prev)
       }
       if (e.key === 'Escape') {
-        setOpen(false)
+        setInternalOpen(false)
+        if (onClose) onClose()
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [])
+  }, [onClose])
 
   if (!open) return null
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={() => setOpen(false)}
+      onClick={close}
     >
       <div
         className="card w-full max-w-md p-6"
@@ -45,7 +56,7 @@ export default function KeyboardShortcutsOverlay() {
             <Keyboard className="h-5 w-5" />
             <h2 className="text-lg font-semibold">Keyboard Shortcuts</h2>
           </div>
-          <button className="rounded p-1 hover:bg-accent" onClick={() => setOpen(false)}>
+          <button className="rounded p-1 hover:bg-accent" onClick={close}>
             <X size={18} />
           </button>
         </div>

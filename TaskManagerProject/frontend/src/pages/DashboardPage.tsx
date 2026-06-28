@@ -416,7 +416,7 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
         title,
         description,
         priority: priority as any,
-        deadline: deadline || new Date().toISOString(),
+        deadline: deadline || undefined,
       })
       showToast('Task created successfully', 'success')
       onClose()

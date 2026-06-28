@@ -15,8 +15,11 @@ public class CreateTaskRequestValidator : AbstractValidator<CreateTaskRequest>
             .NotEmpty().WithMessage("Description is required")
             .MaximumLength(2000).WithMessage("Description must not exceed 2000 characters");
 
-        RuleFor(x => x.Deadline)
-            .GreaterThan(DateTime.UtcNow).WithMessage("Deadline must be in the future");
+        When(x => x.Deadline.HasValue, () =>
+        {
+            RuleFor(x => x.Deadline!.Value)
+                .GreaterThan(DateTime.UtcNow).WithMessage("Deadline must be in the future");
+        });
 
         RuleFor(x => x.UserId)
             .NotEqual(Guid.Empty).When(x => x.UserId.HasValue)

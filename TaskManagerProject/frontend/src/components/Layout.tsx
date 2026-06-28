@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { LayoutDashboard, Trello, LogOut, CheckSquare, Moon, Sun, User, BarChart3, Keyboard } from 'lucide-react'
@@ -9,9 +10,10 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
+  const [showShortcuts, setShowShortcuts] = useState(false)
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     navigate('/login')
   }
 
@@ -44,7 +46,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             <button onClick={toggleTheme} className="btn-outline ml-2" title="Toggle theme">
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            <button onClick={() => {}} className="btn-outline" title="Keyboard shortcuts (?)">
+            <button onClick={() => setShowShortcuts(true)} className="btn-outline" title="Keyboard shortcuts (?)">
               <Keyboard size={18} />
             </button>
             <button onClick={handleLogout} className="btn-outline">
@@ -54,7 +56,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main>{children}</main>
-      <KeyboardShortcutsOverlay />
+      <KeyboardShortcutsOverlay open={showShortcuts} onClose={() => setShowShortcuts(false)} />
     </div>
   )
 }

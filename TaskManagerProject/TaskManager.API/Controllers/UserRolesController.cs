@@ -22,16 +22,16 @@ public class UserRolesController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Add(Guid userId, Guid roleId, CancellationToken ct)
     {
-        await _service.AssignRoleAsync(userId, roleId, ct);
-        return NoContent();
+        var ok = await _service.AssignRoleAsync(userId, roleId, ct);
+        return ok ? NoContent() : NotFound("User, role not found, or role already assigned");
     }
 
     [HttpDelete("{userId:guid}/{roleId:guid}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Remove(Guid userId, Guid roleId, CancellationToken ct)
     {
-        await _service.RemoveRoleAsync(userId, roleId, ct);
-        return NoContent();
+        var ok = await _service.RemoveRoleAsync(userId, roleId, ct);
+        return ok ? NoContent() : NotFound();
     }
 
     [HttpGet("user/{userId:guid}")]
