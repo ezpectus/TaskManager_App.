@@ -46,6 +46,10 @@ jobs:
         run: npx tsc --noEmit
         working-directory: TaskManagerProject/frontend
 
+      - name: Test
+        run: npx vitest run
+        working-directory: TaskManagerProject/frontend
+
       - name: Build
         run: npm run build
         working-directory: TaskManagerProject/frontend
