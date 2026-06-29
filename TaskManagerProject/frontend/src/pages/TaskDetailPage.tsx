@@ -25,10 +25,10 @@ const PRIORITY_COLORS: Record<string, string> = {
 }
 
 const PRIORITY_ICONS: Record<string, React.ReactNode> = {
-  High: <ArrowUp size={12} className="text-red-500" />,
-  Medium: <Minus size={12} className="text-orange-500" />,
-  Low: <ArrowDown size={12} className="text-gray-500" />,
-  Critical: <AlertCircle size={12} className="text-purple-500" />,
+  High: <ArrowUp size={12} className="text-red-600 dark:text-red-400" />,
+  Medium: <Minus size={12} className="text-orange-600 dark:text-orange-400" />,
+  Low: <ArrowDown size={12} className="text-gray-600 dark:text-gray-400" />,
+  Critical: <AlertCircle size={12} className="text-purple-600 dark:text-purple-400" />,
 }
 
 export default function TaskDetailPage() {
@@ -276,7 +276,7 @@ export default function TaskDetailPage() {
             ) : (
               <ul className="space-y-2">
                 {task.subtasks.map((st) => (
-                  <li key={st.id} className="flex items-center gap-2 rounded-md border p-2">
+                  <li key={st.id} className="flex items-center gap-2 rounded-md border border-border p-2 dark:border-gray-700">
                     <input
                       type="checkbox"
                       checked={st.isCompleted}

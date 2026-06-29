@@ -28,7 +28,7 @@ export function getRelativeDeadline(deadline: string, status: string): RelativeD
   if (diffDays === 0) {
     return {
       text: 'Due today',
-      className: 'text-orange-500 font-medium',
+      className: 'text-orange-600 dark:text-orange-400 font-medium',
       isOverdue: false,
       isToday: true,
     }
@@ -64,7 +64,7 @@ export function getRelativeDeadline(deadline: string, status: string): RelativeD
   const overdueDays = Math.abs(diffDays)
   return {
     text: overdueDays === 1 ? 'Overdue by 1 day' : `Overdue by ${overdueDays} days`,
-    className: 'text-red-500 font-medium',
+    className: 'text-red-600 dark:text-red-400 font-medium',
     isOverdue: true,
     isToday: false,
   }

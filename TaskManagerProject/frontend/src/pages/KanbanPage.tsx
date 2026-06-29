@@ -21,10 +21,10 @@ const PRIORITY_BADGE: Record<string, string> = {
 }
 
 const PRIORITY_ICONS: Record<string, React.ReactNode> = {
-  High: <ArrowUp size={10} className="text-red-500" />,
-  Medium: <Minus size={10} className="text-orange-500" />,
-  Low: <ArrowDown size={10} className="text-gray-500" />,
-  Critical: <AlertCircle size={10} className="text-purple-500" />,
+  High: <ArrowUp size={10} className="text-red-600 dark:text-red-400" />,
+  Medium: <Minus size={10} className="text-orange-600 dark:text-orange-400" />,
+  Low: <ArrowDown size={10} className="text-gray-600 dark:text-gray-400" />,
+  Critical: <AlertCircle size={10} className="text-purple-600 dark:text-purple-400" />,
 }
 
 export default function KanbanPage() {

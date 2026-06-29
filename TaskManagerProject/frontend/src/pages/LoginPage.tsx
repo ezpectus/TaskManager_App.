@@ -76,12 +76,12 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-4 rounded-lg border border-border bg-secondary/50 p-3 text-xs text-muted-foreground">
+        <div className="mt-4 rounded-lg border border-border bg-secondary/50 p-3 text-xs text-muted-foreground dark:border-gray-700 dark:bg-gray-800/50">
           <div className="mb-1 flex items-center gap-1 font-medium text-foreground">
             <Info size={14} /> Demo Accounts
           </div>
-          <p>Admin: <code className="font-mono">admin@taskmanager.com</code> / <code className="font-mono">Admin123!</code></p>
-          <p>Demo: <code className="font-mono">demo@taskmanager.com</code> / <code className="font-mono">Demo123!</code></p>
+          <p>Admin: <code className="rounded bg-secondary px-1 font-mono dark:bg-gray-800">admin@taskmanager.com</code> / <code className="rounded bg-secondary px-1 font-mono dark:bg-gray-800">Admin123!</code></p>
+          <p>Demo: <code className="rounded bg-secondary px-1 font-mono dark:bg-gray-800">demo@taskmanager.com</code> / <code className="rounded bg-secondary px-1 font-mono dark:bg-gray-800">Demo123!</code></p>
         </div>
 
         <p className="mt-4 text-center text-sm text-muted-foreground">

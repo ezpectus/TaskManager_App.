@@ -68,7 +68,7 @@ export default function KeyboardShortcutsOverlay({ open: externalOpen, onClose }
                 {s.keys.map((k, j) => (
                   <span key={j}>
                     {j > 0 && <span className="mx-1 text-muted-foreground">then</span>}
-                    <kbd className="rounded border bg-secondary px-2 py-0.5 text-xs font-mono">
+                    <kbd className="rounded border bg-secondary px-2 py-0.5 text-xs font-mono dark:bg-gray-800">
                       {k}
                     </kbd>
                   </span>
@@ -78,7 +78,7 @@ export default function KeyboardShortcutsOverlay({ open: externalOpen, onClose }
           ))}
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          Press <kbd className="rounded border bg-secondary px-1.5 py-0.5 font-mono">?</kbd> anywhere to toggle this panel.
+          Press <kbd className="rounded border bg-secondary px-1.5 py-0.5 font-mono dark:bg-gray-800">?</kbd> anywhere to toggle this panel.
         </p>
       </div>
     </div>

@@ -151,22 +151,22 @@ export default function ProfilePage() {
         <h2 className="mb-4 text-lg font-semibold">Task Statistics</h2>
         <div className="grid grid-cols-4 gap-4">
           <div className="card p-4 text-center">
-            <CheckSquare className="mx-auto mb-2 h-6 w-6 text-blue-500" />
+            <CheckSquare className="mx-auto mb-2 h-6 w-6 text-blue-600 dark:text-blue-400" />
             <p className="text-2xl font-bold">{todoCount}</p>
             <p className="text-xs text-muted-foreground">To Do</p>
           </div>
           <div className="card p-4 text-center">
-            <Clock className="mx-auto mb-2 h-6 w-6 text-yellow-500" />
+            <Clock className="mx-auto mb-2 h-6 w-6 text-yellow-600 dark:text-yellow-400" />
             <p className="text-2xl font-bold">{inProgressCount}</p>
             <p className="text-xs text-muted-foreground">In Progress</p>
           </div>
           <div className="card p-4 text-center">
-            <CheckCircle className="mx-auto mb-2 h-6 w-6 text-green-500" />
+            <CheckCircle className="mx-auto mb-2 h-6 w-6 text-green-600 dark:text-green-400" />
             <p className="text-2xl font-bold">{doneCount}</p>
             <p className="text-xs text-muted-foreground">Done</p>
           </div>
           <div className="card p-4 text-center">
-            <X className="mx-auto mb-2 h-6 w-6 text-gray-500" />
+            <X className="mx-auto mb-2 h-6 w-6 text-gray-600 dark:text-gray-400" />
             <p className="text-2xl font-bold">{cancelledCount}</p>
             <p className="text-xs text-muted-foreground">Cancelled</p>
           </div>
@@ -182,7 +182,7 @@ export default function ProfilePage() {
                 <div className="flex-1">
                   <span className="font-medium">{task.title}</span>
                   {task.deadline && !task.deadline.startsWith('0001-01-01') && (
-                    <span className={`ml-3 text-xs ${task.status !== 'Done' && task.status !== 'Cancelled' && new Date(task.deadline) < new Date() ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+                    <span className={`ml-3 text-xs ${task.status !== 'Done' && task.status !== 'Cancelled' && new Date(task.deadline) < new Date() ? 'text-red-600 dark:text-red-400 font-medium' : 'text-muted-foreground'}`}>
                       <Calendar size={11} className="inline mr-1" />
                       {new Date(task.deadline).toLocaleDateString()}
                     </span>
@@ -201,7 +201,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        <div className="mt-6 border-t pt-6">
+        <div className="mt-6 border-t border-border pt-6 dark:border-gray-700">
           {showPasswordForm ? (
             <div className="space-y-3">
               <h2 className="text-lg font-semibold">Change Password</h2>

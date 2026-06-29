@@ -31,9 +31,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const dismiss = (id: number) => setToasts((prev) => prev.filter((t) => t.id !== id))
 
   const icons = {
-    success: <CheckCircle className="h-5 w-5 text-green-500" />,
+    success: <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />,
     error: <XCircle className="h-5 w-5 text-destructive" />,
-    info: <Info className="h-5 w-5 text-blue-500" />,
+    info: <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />,
   }
 
   return (

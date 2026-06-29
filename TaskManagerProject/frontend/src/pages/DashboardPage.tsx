@@ -31,10 +31,10 @@ const PRIORITY_COLORS: Record<string, string> = {
 }
 
 const PRIORITY_ICONS: Record<string, React.ReactNode> = {
-  High: <ArrowUp size={12} className="text-red-500" />,
-  Medium: <Minus size={12} className="text-orange-500" />,
-  Low: <ArrowDown size={12} className="text-gray-500" />,
-  Critical: <AlertCircle size={12} className="text-purple-500" />,
+  High: <ArrowUp size={12} className="text-red-600 dark:text-red-400" />,
+  Medium: <Minus size={12} className="text-orange-600 dark:text-orange-400" />,
+  Low: <ArrowDown size={12} className="text-gray-600 dark:text-gray-400" />,
+  Critical: <AlertCircle size={12} className="text-purple-600 dark:text-purple-400" />,
 }
 
 type SortBy = 'smart' | 'deadline' | 'priority' | 'created' | 'title'
@@ -181,7 +181,7 @@ export default function DashboardPage() {
           <option value="priority">By priority</option>
           <option value="title">By title (A-Z)</option>
         </select>
-        <div className="flex items-center gap-1 rounded-lg border p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-input p-1">
           <button
             className={`rounded p-1.5 ${view === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'}`}
             onClick={() => setView('grid')}
@@ -330,7 +330,7 @@ export default function DashboardPage() {
       ) : (
         <div className="card overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="border-b bg-secondary/50">
+            <thead className="border-b bg-secondary/50 dark:bg-gray-800/50">
               <tr>
                 <th className="px-4 py-3 text-left font-semibold">Title</th>
                 <th className="px-4 py-3 text-left font-semibold">Status</th>

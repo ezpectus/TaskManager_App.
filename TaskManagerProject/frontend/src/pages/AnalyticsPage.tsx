@@ -67,28 +67,28 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-blue-500" />
+            <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             <span className="text-sm text-muted-foreground">Total Tasks</span>
           </div>
           <p className="text-3xl font-bold">{total}</p>
         </div>
         <div className="card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-500" />
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
             <span className="text-sm text-muted-foreground">Completion Rate</span>
           </div>
           <p className="text-3xl font-bold">{completionRate}%</p>
         </div>
         <div className="card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <Clock className="h-5 w-5 text-yellow-500" />
+            <Clock className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
             <span className="text-sm text-muted-foreground">In Progress</span>
           </div>
           <p className="text-3xl font-bold">{byStatus.InProgress}</p>
         </div>
         <div className="card p-4">
           <div className="mb-2 flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500" />
+            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
             <span className="text-sm text-muted-foreground">Overdue</span>
           </div>
           <p className="text-3xl font-bold">{overdue}</p>
@@ -101,10 +101,10 @@ export default function AnalyticsPage() {
           <div className="space-y-3">
             {(['Todo', 'InProgress', 'Done', 'Cancelled'] as TaskStatus[]).map((status) => {
               const colors: Record<TaskStatus, string> = {
-                Todo: 'bg-blue-500',
-                InProgress: 'bg-yellow-500',
-                Done: 'bg-green-500',
-                Cancelled: 'bg-gray-500',
+                Todo: 'bg-blue-600 dark:bg-blue-500',
+                InProgress: 'bg-yellow-600 dark:bg-yellow-500',
+                Done: 'bg-green-600 dark:bg-green-500',
+                Cancelled: 'bg-gray-600 dark:bg-gray-500',
               }
               const labels: Record<TaskStatus, string> = {
                 Todo: 'To Do',
@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
                     <span>{labels[status]}</span>
                     <span className="text-muted-foreground">{byStatus[status]}</span>
                   </div>
-                  <div className="h-3 overflow-hidden rounded-full bg-secondary">
+                  <div className="h-3 overflow-hidden rounded-full bg-secondary dark:bg-gray-700">
                     <div
                       className={`h-full rounded-full ${colors[status]} transition-all`}
                       style={{ width: `${(byStatus[status] / maxStatus) * 100}%` }}
@@ -135,10 +135,10 @@ export default function AnalyticsPage() {
           <div className="space-y-3">
             {(['Low', 'Medium', 'High', 'Critical'] as TaskPriority[]).map((priority) => {
               const colors: Record<TaskPriority, string> = {
-                Low: 'bg-gray-500',
-                Medium: 'bg-orange-500',
-                High: 'bg-red-500',
-                Critical: 'bg-purple-500',
+                Low: 'bg-gray-600 dark:bg-gray-500',
+                Medium: 'bg-orange-600 dark:bg-orange-500',
+                High: 'bg-red-600 dark:bg-red-500',
+                Critical: 'bg-purple-600 dark:bg-purple-500',
               }
               return (
                 <div key={priority}>
@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
                     <span>{priority}</span>
                     <span className="text-muted-foreground">{byPriority[priority]}</span>
                   </div>
-                  <div className="h-3 overflow-hidden rounded-full bg-secondary">
+                  <div className="h-3 overflow-hidden rounded-full bg-secondary dark:bg-gray-700">
                     <div
                       className={`h-full rounded-full ${colors[priority]} transition-all`}
                       style={{ width: `${(byPriority[priority] / maxPriority) * 100}%` }}
