@@ -19,11 +19,11 @@ public class TaskItemTests
     }
 
     [Fact]
-    public void Create_Should_Set_Deadline_To_MaxValue_When_Not_Provided()
+    public void Create_Should_Set_Deadline_To_MinValue_When_Not_Provided()
     {
         var task = TaskItem.Create("Title", "Desc", TaskPriority.High);
 
-        Assert.Equal(DateTime.MaxValue, task.Deadline);
+        Assert.Equal(DateTime.MinValue, task.Deadline);
     }
 
     [Fact]
