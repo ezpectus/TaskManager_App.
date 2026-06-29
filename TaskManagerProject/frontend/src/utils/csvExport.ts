@@ -5,11 +5,11 @@ export function exportTasksToCSV(tasks: TaskDto[]): void {
   const rows = tasks.map((t) => [
     escapeCSV(t.title),
     escapeCSV(t.description),
-    t.status,
-    t.priority,
-    t.deadline,
-    new Date(t.createdAt).toISOString(),
-    new Date(t.updatedAt).toISOString(),
+    escapeCSV(t.status),
+    escapeCSV(t.priority),
+    escapeCSV(t.deadline),
+    escapeCSV(new Date(t.createdAt).toISOString()),
+    escapeCSV(new Date(t.updatedAt).toISOString()),
   ])
 
   const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')

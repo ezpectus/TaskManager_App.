@@ -50,6 +50,13 @@ describe('getRelativeDeadline', () => {
     expect(result?.isOverdue).toBe(false)
     expect(result?.text).toBe(new Date(future).toLocaleDateString())
   })
+
+  it('returns formatted date for cancelled tasks', () => {
+    const future = new Date(Date.now() + 3 * 86400000).toISOString()
+    const result = getRelativeDeadline(future, 'Cancelled')
+    expect(result?.isOverdue).toBe(false)
+    expect(result?.text).toBe(new Date(future).toLocaleDateString())
+  })
 })
 
 describe('isOverdue', () => {
@@ -60,6 +67,11 @@ describe('isOverdue', () => {
   it('returns false for completed tasks', () => {
     const past = new Date(Date.now() - 86400000).toISOString()
     expect(isOverdue(past, 'Done')).toBe(false)
+  })
+
+  it('returns false for cancelled tasks', () => {
+    const past = new Date(Date.now() - 86400000).toISOString()
+    expect(isOverdue(past, 'Cancelled')).toBe(false)
   })
 
   it('returns true for past deadline on non-completed task', () => {
@@ -84,13 +96,17 @@ describe('isDueToday', () => {
     expect(isDueToday(tomorrow, 'Todo')).toBe(false)
   })
 
-  it('returns false for completed tasks', () => {
+  it('returns false for cancelled tasks', () => {
     const today = new Date().toISOString()
-    expect(isDueToday(today, 'Done')).toBe(false)
+    expect(isDueToday(today, 'Cancelled')).toBe(false)
   })
 })
 
 describe('getPriorityScore', () => {
+  it('returns 4 for Critical', () => {
+    expect(getPriorityScore('Critical')).toBe(4)
+  })
+
   it('returns 3 for High', () => {
     expect(getPriorityScore('High')).toBe(3)
   })
@@ -116,6 +132,11 @@ describe('getUrgencyScore', () => {
   it('returns 0 for completed tasks', () => {
     const today = new Date().toISOString()
     expect(getUrgencyScore(today, 'Done')).toBe(0)
+  })
+
+  it('returns 0 for cancelled tasks', () => {
+    const today = new Date().toISOString()
+    expect(getUrgencyScore(today, 'Cancelled')).toBe(0)
   })
 
   it('returns 100+ for overdue tasks', () => {
@@ -144,9 +165,9 @@ describe('getSmartScore', () => {
     expect(score.total).toBe(score.urgency * score.priority)
   })
 
-  it('returns 0 total for completed tasks', () => {
+  it('returns 0 total for cancelled tasks', () => {
     const today = new Date().toISOString()
-    const score = getSmartScore({ deadline: today, priority: 'High', status: 'Done' })
+    const score = getSmartScore({ deadline: today, priority: 'High', status: 'Cancelled' })
     expect(score.total).toBe(0)
   })
 })

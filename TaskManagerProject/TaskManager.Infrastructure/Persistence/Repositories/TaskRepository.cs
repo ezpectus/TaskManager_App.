@@ -23,12 +23,26 @@ public class TaskRepository : ITaskRepository
     public async Task<TaskItem?> GetByIdAsync(Guid id, CancellationToken ct)
         => await _context.Tasks
             .Include(t => t.User)
+            .Include(t => t.Subtasks)
+            .Include(t => t.Comments)
+                .ThenInclude(c => c.User)
+            .Include(t => t.Attachments)
+            .Include(t => t.TaskTags)
+                .ThenInclude(tt => tt.Tag)
+            .Include(t => t.ActivityLogs)
             .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == id, ct);
+
+    public async Task<TaskItem?> GetByIdForUpdateAsync(Guid id, CancellationToken ct)
+        => await _context.Tasks
+            .Include(t => t.User)
             .FirstOrDefaultAsync(t => t.Id == id, ct);
 
     public async Task<IReadOnlyCollection<TaskItem>> GetAllAsync(CancellationToken ct)
         => await _context.Tasks
             .Include(t => t.User)
+            .Include(t => t.Subtasks)
+            .Include(t => t.Comments)
             .AsNoTracking()
             .OrderByDescending(t => t.CreatedAt)
             .Take(500)
@@ -44,6 +58,7 @@ public class TaskRepository : ITaskRepository
     {
         var query = _context.Tasks
             .Include(t => t.User)
+            .Include(t => t.Subtasks)
             .AsNoTracking()
             .AsQueryable();
 

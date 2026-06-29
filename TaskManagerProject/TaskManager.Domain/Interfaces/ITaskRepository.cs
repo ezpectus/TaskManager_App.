@@ -10,6 +10,7 @@ public interface ITaskRepository
 {
     Task AddAsync(TaskItem task, CancellationToken ct);
     Task<TaskItem?> GetByIdAsync(Guid id, CancellationToken ct);
+    Task<TaskItem?> GetByIdForUpdateAsync(Guid id, CancellationToken ct);
     Task<IReadOnlyCollection<TaskItem>> GetAllAsync(CancellationToken ct);
     Task<(IReadOnlyCollection<TaskItem> Items, int TotalCount)> GetPagedAsync(
         int page, int pageSize,

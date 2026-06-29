@@ -294,25 +294,28 @@ Open the platform for integrations with external tools.
 
 ---
 
-## 11. Dark Mode & UI Polish
+## 11. Dark Mode & UI Polish — ✅ Mostly Implemented
 
 ### Concept
 Polish the UI with dark mode, themes, and UX improvements.
 
-### Detailed Functionality
-- **Dark Mode**: System, light, dark toggle with persistence
+### Implemented
+- **Dark Mode**: toggle with persistence ✅
+- **Keyboard Shortcuts**: `?` overlay ✅
+- **Skeleton Loaders**: loading placeholders ✅
+- **Toasts**: success/error notifications ✅
+- **Empty States**: messages with calls to action ✅
+- **Priority Icons**: arrow up/down/minus/alert (incl. Critical) ✅
+- **4-status Kanban**: Todo, In Progress, Done, Cancelled ✅
+- **Comment author attribution**: username on comments ✅
+- **Auto-open edit mode**: via `?edit=true` URL param ✅
+
+### Still TODO
 - **Themes**: Custom accent colors, compact/comfortable density
-- **Keyboard Shortcuts**:
-  - `N` — new task
-  - `/` — focus search
-  - `B` — toggle board/list view
-  - `?` — show shortcuts help
-  - `G` then `D` — go to dashboard
-  - `G` then `K` — go to kanban
-- **Drag & Drop**: Reorder tasks on Kanban, reorder subtasks
-- **Empty States**: Illustrated empty states with calls to action
-- **Skeleton Loaders**: Loading placeholders for better perceived performance
-- **Toasts**: Success/error notifications with auto-dismiss
+- **Keyboard Shortcuts**: `N` — new task, `/` — focus search, `B` — toggle board/list view, `G` then `D` — go to dashboard, `G` then `K` — go to kanban
+- **Drag & Drop**: Reorder subtasks within a task
+- **Calendar View**: Month/week view with tasks on deadline dates (Google Calendar style)
+- **Timeline View**: Gantt chart with task dependencies
 
 ---
 
@@ -338,3 +341,87 @@ Enterprise-grade security features for production use.
   - Data export (GDPR compliance)
   - Data retention policies
   - Soft delete with configurable retention period
+
+---
+
+## 13. Calendar View (Google Calendar / Notion style)
+
+### Concept
+Display tasks on a calendar grid, grouped by deadline date — inspired by Google Calendar's month/week views and Notion's calendar database view.
+
+### Detailed Functionality
+- **Month View**: Grid of 4–6 weeks, tasks rendered as colored chips on their deadline date
+- **Week View**: 7-day columns with tasks positioned by deadline time
+- **Day View**: Hourly slots with timed tasks
+- **Color coding**: By priority (Low=gray, Medium=orange, High=red, Critical=purple) or by status
+- **Drag & drop**: Drag task chip to different date to change deadline
+- **Quick create**: Click empty date slot to create task with that deadline
+- **Mini calendar**: Sidebar month picker for navigation
+- **Today indicator**: Highlight current date cell
+- **Overflow handling**: "+N more" on cells with too many tasks
+
+### Data Model
+No new tables — uses existing `TaskItem.Deadline` field. Frontend-only feature.
+
+---
+
+## 14. Task Dependencies & Blocked Status (Jira / Asana style)
+
+### Concept
+Allow tasks to depend on other tasks — a task cannot start until its blockers are done.
+
+### Detailed Functionality
+- **Blocked-by relationship**: Task A is blocked by Task B → Task A shows "Blocked" badge
+- **Blocking relationship**: Task B blocks Task A → Task B shows "Blocking N tasks" badge
+- **Circular dependency detection**: Prevent A→B→C→A cycles
+- **Auto-status**: When all blockers complete, task auto-changes from "Blocked" to "Todo"
+- **Dependency graph**: Visual node-link diagram showing task relationships
+- **Cascade complete**: Option to auto-complete dependent tasks when blocker is done
+
+### Data Model
+```
+TaskDependency: Id, TaskId (dependent), BlocksOnTaskId (blocker), CreatedAt
+```
+
+---
+
+## 15. Recurring Tasks & Templates (Todoist / TickTick style)
+
+### Concept
+Create tasks that automatically regenerate on a schedule, and reusable task templates.
+
+### Detailed Functionality
+- **Recurrence patterns**: Daily, weekly (specific days), monthly, custom (every N days/weeks/months)
+- **Auto-generation**: Next instance created when current is completed or on schedule date
+- **End conditions**: After N occurrences, on specific date, or never
+- **Template library**: Save task as template with subtasks, tags, description, priority
+- **Create from template**: One-click task creation with pre-filled fields
+- **Preview upcoming**: Show next 5 scheduled instances
+
+### Data Model
+```
+TaskTemplate: Id, Name, Title, Description, Priority, Subtasks (JSON), Tags (JSON)
+RecurrenceRule: Id, TaskId, Pattern, Interval, DaysOfWeek, DayOfMonth, EndDate, NextGenerationAt, MaxOccurrences
+```
+
+---
+
+## 16. Natural Language Task Creation (Todoist / TickTick style)
+
+### Concept
+Create tasks by typing natural language — the system parses intent, deadline, and priority automatically.
+
+### Detailed Functionality
+- **Smart parsing**: Type "Fix login bug tomorrow high priority" → creates task with:
+  - Title: "Fix login bug"
+  - Deadline: tomorrow
+  - Priority: High
+- **Date keywords**: today, tomorrow, next week, Monday, Jan 15, in 3 days
+- **Priority keywords**: low, medium, high, critical, !1, !2, !3, !4
+- **Quick add bar**: Global keyboard shortcut (e.g., `Ctrl+Space`) opens quick-add input
+- **Preview**: Show parsed fields before creating task
+- **Undo**: Quick undo if parsing was wrong
+
+### Implementation
+- Frontend-only parsing with regex + date library (no AI needed for basic version)
+- Optional: LLM integration for complex natural language input

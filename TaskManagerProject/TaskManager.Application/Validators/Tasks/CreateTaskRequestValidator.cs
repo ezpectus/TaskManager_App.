@@ -18,7 +18,7 @@ public class CreateTaskRequestValidator : AbstractValidator<CreateTaskRequest>
         When(x => x.Deadline.HasValue, () =>
         {
             RuleFor(x => x.Deadline!.Value)
-                .GreaterThan(DateTime.UtcNow).WithMessage("Deadline must be in the future");
+                .GreaterThanOrEqualTo(DateTime.UtcNow.Date).WithMessage("Deadline must be today or in the future");
         });
 
         RuleFor(x => x.UserId)

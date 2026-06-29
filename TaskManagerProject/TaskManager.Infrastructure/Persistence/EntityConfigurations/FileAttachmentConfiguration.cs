@@ -30,6 +30,8 @@ public class FileAttachmentConfiguration : IEntityTypeConfiguration<FileAttachme
         builder.Property(a => a.UserId)
             .HasColumnName("user_id");
 
+        builder.HasQueryFilter(a => !a.Task.IsDeleted);
+
         builder.HasOne(a => a.Task)
             .WithMany(t => t.Attachments)
             .HasForeignKey(a => a.TaskId);

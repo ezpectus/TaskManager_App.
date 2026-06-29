@@ -39,8 +39,7 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         builder.HasQueryFilter(t => !t.IsDeleted);
 
         builder.Property(t => t.RowVersion)
-            .IsConcurrencyToken()
-            .HasDefaultValueSql("xmin()");
+            .IsRowVersion();
 
         builder.HasIndex(t => t.Deadline);
         builder.HasIndex(t => t.Status);

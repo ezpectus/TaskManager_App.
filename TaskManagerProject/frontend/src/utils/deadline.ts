@@ -10,13 +10,13 @@ export function getRelativeDeadline(deadline: string, status: string): RelativeD
 
   const due = new Date(deadline)
   const now = new Date()
-  const isOverdue = status !== 'Done' && due < now
+  const isOverdue = status !== 'Done' && status !== 'Cancelled' && due < now
 
   const dueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate())
   const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const diffDays = Math.round((dueDay.getTime() - todayDay.getTime()) / (1000 * 60 * 60 * 24))
 
-  if (status === 'Done') {
+  if (status === 'Done' || status === 'Cancelled') {
     return {
       text: new Date(deadline).toLocaleDateString(),
       className: 'text-muted-foreground',
@@ -71,12 +71,12 @@ export function getRelativeDeadline(deadline: string, status: string): RelativeD
 }
 
 export function isOverdue(deadline: string, status: string): boolean {
-  if (!deadline || deadline.startsWith('0001-01-01') || status === 'Done') return false
+  if (!deadline || deadline.startsWith('0001-01-01') || status === 'Done' || status === 'Cancelled') return false
   return new Date(deadline) < new Date()
 }
 
 export function isDueToday(deadline: string, status: string): boolean {
-  if (!deadline || deadline.startsWith('0001-01-01') || status === 'Done') return false
+  if (!deadline || deadline.startsWith('0001-01-01') || status === 'Done' || status === 'Cancelled') return false
   const due = new Date(deadline)
   const now = new Date()
   return due.getFullYear() === now.getFullYear() &&
@@ -84,14 +84,14 @@ export function isDueToday(deadline: string, status: string): boolean {
     due.getDate() === now.getDate()
 }
 
-const PRIORITY_SCORE: Record<string, number> = { High: 3, Medium: 2, Low: 1 }
+const PRIORITY_SCORE: Record<string, number> = { Critical: 4, High: 3, Medium: 2, Low: 1 }
 
 export function getPriorityScore(priority: string): number {
   return PRIORITY_SCORE[priority] ?? 1
 }
 
 export function getUrgencyScore(deadline: string, status: string): number {
-  if (!deadline || deadline.startsWith('0001-01-01') || status === 'Done') return 0
+  if (!deadline || deadline.startsWith('0001-01-01') || status === 'Done' || status === 'Cancelled') return 0
   const now = new Date()
   const due = new Date(deadline)
   const diffHours = (due.getTime() - now.getTime()) / (1000 * 60 * 60)

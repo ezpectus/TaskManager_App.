@@ -4,14 +4,14 @@ This document outlines the planned evolution of the Task Manager App beyond its 
 
 ---
 
-## Current State (v1.7)
+## Current State (v1.8)
 
 The application is a fully functional full-stack task manager with:
 - **Backend**: ASP.NET Core 9, Clean Architecture, JWT auth + refresh tokens, EF Core + PostgreSQL
-- **Frontend**: React 19, TypeScript, TailwindCSS, Kanban board with drag & drop, dashboard with filters, analytics page, markdown rendering, CSV export, profile editing with password change
-- **Testing**: 78 unit tests (xUnit + Moq + AutoMapper)
+- **Frontend**: React 19, TypeScript, TailwindCSS, Kanban board with drag & drop (4 columns incl. Cancelled), dashboard with filters, analytics page, markdown rendering, CSV export, profile editing with password change, full Critical priority support
+- **Testing**: 84 backend unit tests (xUnit + Moq + AutoMapper) + 32 frontend tests (Vitest)
 - **DevOps**: Docker, GitHub Actions CI/CD, docker-compose, nginx, start.bat (Windows) + start.sh (Linux)
-- **Features**: Rate limiting, response caching, activity logging, DB seeding, task assignment, soft delete, optimistic concurrency
+- **Features**: Rate limiting, response caching, activity logging, DB seeding, task assignment, soft delete, optimistic concurrency, 4 task statuses (Todo, InProgress, Done, Cancelled), 4 priority levels (Low, Medium, High, Critical)
 - **Documentation**: ADRs, API reference, changelog, contributing guide, refactoring log
 
 ---

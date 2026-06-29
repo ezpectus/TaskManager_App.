@@ -72,7 +72,7 @@ public class TaskService : ITaskService
 
     public async Task<bool> UpdateAsync(Guid id, UpdateTaskRequest dto, CancellationToken ct)
     {
-        var task = await _repo.GetByIdAsync(id, ct);
+        var task = await _repo.GetByIdForUpdateAsync(id, ct);
         if (task == null) return false;
 
         if (dto.Title != null || dto.Description != null || dto.Priority.HasValue || dto.Deadline.HasValue)
@@ -86,7 +86,14 @@ public class TaskService : ITaskService
 
         if (dto.Status.HasValue && dto.Status.Value != task.Status)
         {
-            task.ChangeStatus(dto.Status.Value);
+            try
+            {
+                task.ChangeStatus(dto.Status.Value);
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
 
         task.Touch();
@@ -98,7 +105,7 @@ public class TaskService : ITaskService
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken ct)
     {
-        var task = await _repo.GetByIdAsync(id, ct);
+        var task = await _repo.GetByIdForUpdateAsync(id, ct);
         if (task == null) return false;
 
         task.SoftDelete();
@@ -110,7 +117,7 @@ public class TaskService : ITaskService
 
     public async Task<bool> AssignAsync(Guid taskId, Guid userId, CancellationToken ct)
     {
-        var task = await _repo.GetByIdAsync(taskId, ct);
+        var task = await _repo.GetByIdForUpdateAsync(taskId, ct);
         if (task == null) return false;
 
         var user = await _userRepo.GetByIdAsync(userId, ct);

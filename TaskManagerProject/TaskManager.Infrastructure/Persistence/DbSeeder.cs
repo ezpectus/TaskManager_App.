@@ -9,7 +9,7 @@ public static class DbSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        await context.Database.MigrateAsync();
+        await context.Database.EnsureCreatedAsync();
 
         if (await context.Roles.AnyAsync()) return;
 

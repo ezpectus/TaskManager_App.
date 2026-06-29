@@ -42,5 +42,10 @@ echo   Frontend: http://localhost:3000
 echo   Swagger:  http://localhost:5000/swagger
 echo ============================================
 echo.
+echo Test commands:
+echo   Backend tests:  dotnet test TaskManagerProject\TaskManagerSolution.sln
+echo   Frontend tests: cd TaskManagerProject\frontend ^&^& npx vitest run
+echo   Type check:     cd TaskManagerProject\frontend ^&^& npx tsc --noEmit
+echo.
 echo Close both command windows to stop the servers.
 pause

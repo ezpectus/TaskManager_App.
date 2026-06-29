@@ -16,6 +16,8 @@ public class TaskTagConfiguration : IEntityTypeConfiguration<TaskTag>
         builder.Property(tt => tt.TagId)
             .HasColumnName("tag_id");
 
+        builder.HasQueryFilter(tt => !tt.Task.IsDeleted);
+
         builder.HasOne(tt => tt.Task)
             .WithMany(t => t.TaskTags)
             .HasForeignKey(tt => tt.TaskId);

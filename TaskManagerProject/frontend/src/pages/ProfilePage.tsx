@@ -30,13 +30,13 @@ export default function ProfilePage() {
 
         const [userData, taskData] = await Promise.all([
           userService.getById(userId),
-          taskService.getAll(),
+          taskService.getFiltered({ userId }),
         ])
         setUser(userData)
         setUserId(userId)
         setEditUsername(userData.username)
         setEditEmail(userData.email)
-        setTasks(taskData.filter((t) => t.userId === userId))
+        setTasks(taskData.items)
       } catch {
         showToast('Failed to load profile', 'error')
       } finally {
@@ -106,6 +106,7 @@ export default function ProfilePage() {
   const todoCount = tasks.filter((t) => t.status === 'Todo').length
   const inProgressCount = tasks.filter((t) => t.status === 'InProgress').length
   const doneCount = tasks.filter((t) => t.status === 'Done').length
+  const cancelledCount = tasks.filter((t) => t.status === 'Cancelled').length
 
   return (
     <div className="mx-auto max-w-2xl p-6">
@@ -148,7 +149,7 @@ export default function ProfilePage() {
         </div>
 
         <h2 className="mb-4 text-lg font-semibold">Task Statistics</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <div className="card p-4 text-center">
             <CheckSquare className="mx-auto mb-2 h-6 w-6 text-blue-500" />
             <p className="text-2xl font-bold">{todoCount}</p>
@@ -164,6 +165,11 @@ export default function ProfilePage() {
             <p className="text-2xl font-bold">{doneCount}</p>
             <p className="text-xs text-muted-foreground">Done</p>
           </div>
+          <div className="card p-4 text-center">
+            <X className="mx-auto mb-2 h-6 w-6 text-gray-500" />
+            <p className="text-2xl font-bold">{cancelledCount}</p>
+            <p className="text-xs text-muted-foreground">Cancelled</p>
+          </div>
         </div>
 
         <h2 className="mb-4 mt-6 text-lg font-semibold">Recent Tasks</h2>
@@ -176,7 +182,7 @@ export default function ProfilePage() {
                 <div className="flex-1">
                   <span className="font-medium">{task.title}</span>
                   {task.deadline && !task.deadline.startsWith('0001-01-01') && (
-                    <span className={`ml-3 text-xs ${task.status !== 'Done' && new Date(task.deadline) < new Date() ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
+                    <span className={`ml-3 text-xs ${task.status !== 'Done' && task.status !== 'Cancelled' && new Date(task.deadline) < new Date() ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
                       <Calendar size={11} className="inline mr-1" />
                       {new Date(task.deadline).toLocaleDateString()}
                     </span>
@@ -185,6 +191,7 @@ export default function ProfilePage() {
                 <span className={`badge ${
                   task.status === 'Done' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
                   task.status === 'InProgress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                  task.status === 'Cancelled' ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200' :
                   'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                 }`}>
                   {task.status === 'InProgress' ? 'In Progress' : task.status}

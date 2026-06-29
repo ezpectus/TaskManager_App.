@@ -64,7 +64,7 @@ public class TasksControllerTests
     }
 
     [Fact]
-    public async Task Create_Should_Return201_WithLocation()
+    public async Task Create_Should_Return200_WithId()
     {
         var dto = new CreateTaskRequest
         {
@@ -79,9 +79,8 @@ public class TasksControllerTests
 
         var result = await _controller.Create(dto, CancellationToken.None);
 
-        var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-        Assert.Equal(nameof(TasksController.GetById), createdResult.ActionName);
-        Assert.Equal(expectedId, createdResult.RouteValues!["id"]);
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(expectedId, okResult.Value);
     }
 
     [Fact]

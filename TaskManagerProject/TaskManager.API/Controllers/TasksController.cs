@@ -28,7 +28,7 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> Create(CreateTaskRequest dto, CancellationToken ct)
     {
         var id = await _service.CreateAsync(dto, ct);
-        return CreatedAtAction(nameof(GetById), new { id }, null);
+        return Ok(id);
     }
 
     [HttpGet("{id:guid}")]

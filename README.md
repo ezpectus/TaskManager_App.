@@ -23,7 +23,7 @@ This project is for educational purposes. No license is provided.
 - **Query filters** — global `HasQueryFilter(!IsDeleted)` ensures soft-deleted records are automatically excluded without manual `Where` clauses
 - **Smart Priority Algorithm** — frontend sorting algorithm (`utils/deadline.ts`) that calculates a priority score for each task:
   - **Urgency score** (0–150): based on deadline proximity — overdue tasks get 100+, due today = 90, 3 days = 70, 1 week = 50, 2 weeks = 30, far future = 10
-  - **Priority weight**: High = 3, Medium = 2, Low = 1
+  - **Priority weight**: Critical = 4, High = 3, Medium = 2, Low = 1
   - **Total score** = urgency × priority — higher means more important
   - Used as default sort on Dashboard ("Smart Priority") and within Kanban columns
   - Algorithm inspired by [Eisenhower Matrix](https://en.wikipedia.org/wiki/Time_management#The_Eisenhower_Method) urgency-importance principle
@@ -85,6 +85,11 @@ Several UI/UX patterns in this project were inspired by established productivity
 | Kanban board with drag & drop | Trello / Jira | `KanbanPage` with HTML5 drag events and inline status dropdown |
 | Date picker for deadlines | HTML5 native + Jira-style UX | `<input type="date">` in CreateTaskModal and TaskDetailPage edit mode |
 | Smart Priority sorting (urgency × importance) | Eisenhower Matrix | `getSmartScore()` in `utils/deadline.ts` — default sort on Dashboard, Kanban column ordering |
+| 4-status Kanban (Todo, In Progress, Done, Cancelled) | Trello / Jira | `KanbanPage.tsx` with 4 columns, drag & drop, inline dropdown |
+| Critical priority level | Jira | Purple badge + alert icon across all pages |
+| Comment author attribution | Jira / Notion | Username displayed on each comment in Task Detail |
+| Edit mode via URL param (?edit=true) | Notion | `TaskDetailPage.tsx` reads `useSearchParams` to auto-open edit |
+| CSV export with proper escaping | Jira | `utils/csvExport.ts` — all fields escaped for CSV safety |
 
 ---
 
@@ -114,18 +119,28 @@ Several UI/UX patterns in this project were inspired by established productivity
 # Build the solution
 dotnet build TaskManagerProject\TaskManagerSolution.sln
 
-# Run all tests
+# Run all backend tests
 dotnet test TaskManagerProject\TaskManagerSolution.sln
 
 # Run tests with verbose output
 dotnet test TaskManagerProject\TaskManagerSolution.sln --logger "console;verbosity=detailed"
+
+# Frontend type check
+cd TaskManagerProject\frontend && npx tsc --noEmit
+
+# Run frontend unit tests
+cd TaskManagerProject\frontend && npx vitest run
+
+# Run frontend tests in watch mode
+cd TaskManagerProject\frontend && npx vitest
 ```
 
 **Test coverage:**
 - **Service tests**: TaskService, TaskServiceEdgeCases, SubtaskService, CommentService, UserService
 - **Controller tests**: TasksController
 - **Domain tests**: TaskItem entity (Create, ChangeStatus, MarkAsCompleted, SoftDelete)
-- **Total**: 78 tests, 0 failures
+- **Frontend tests**: deadline utils (isOverdue, isDueToday, getSmartScore, sortBySmartScore — including Cancelled status and Critical priority)
+- **Total**: 84 backend tests + 32 frontend tests, 0 failures
 
 ---
 
@@ -382,7 +397,7 @@ All endpoints are prefixed with `api/v1/`. Authentication requires `Authorizatio
 - **Swagger/OpenAPI** with XML comments and JWT Bearer scheme
 - **CORS** and **health checks** configured
 - **DB seeding** on startup (admin/demo users, roles, sample tasks)
-- **Unit tests**: 78 tests (xUnit + Moq + AutoMapper)
+- **Unit tests**: 84 tests (xUnit + Moq + AutoMapper)
 
 ### Frontend
 - **React 19** + TypeScript + TailwindCSS + Vite
@@ -391,16 +406,22 @@ All endpoints are prefixed with `api/v1/`. Authentication requires `Authorizatio
 - Dashboard with task grid, search, filter chips, and table/list view toggle
 - **Jira-style quick filters**: Overdue, Due Today, High Priority (with live counts)
 - **Sort dropdown**: Smart Priority (urgency × importance), by deadline, priority, title, or creation date
-- **Priority icons** (arrow up/down/minus) across Dashboard, Kanban, and Task Detail
+- **Deadline sort** — tasks without deadline sort last, not first
+- **Priority icons** (arrow up/down/minus/alert) across Dashboard, Kanban, and Task Detail — includes Critical priority
 - **Task counter badge** in page titles (filtered / total)
-- Task detail page with inline editing, subtasks, comments, and markdown rendering
+- Task detail page with inline editing (title, description, status, priority, deadline), subtasks, comments, and markdown rendering
+- **Comment author display** — username shown on each comment
 - **Relative deadline display** ("3 days left", "Overdue by 2 days", "Due today") — Google Calendar style
 - **Deadline editing** via date picker in task create and edit forms
-- Kanban board with drag & drop between status columns and relative deadlines
-- Analytics page with task statistics and progress bars
-- CSV export for tasks
-- Profile page with edit profile, change password, task statistics, and recent tasks with deadlines
+- **Cancelled status** — full support across Dashboard, Kanban (4 columns), Task Detail, Analytics, Profile
+- **Critical priority** — full support across Dashboard, Kanban, Task Detail, Analytics, Profile
+- Kanban board with drag & drop between 4 status columns (Todo, In Progress, Done, Cancelled) and relative deadlines
+- **Inline status dropdown** on Kanban cards with dark mode support
+- Analytics page with task statistics and progress bars (by status and priority)
+- CSV export for tasks (with proper escaping)
+- Profile page with edit profile, change password, task statistics (4 statuses), and recent tasks with deadlines
 - **Keyboard shortcuts overlay** (press `?` anywhere) — Obsidian-style
+- **Auto-open edit mode** when navigating with `?edit=true` query param
 - Dark mode with CSS variables and localStorage persistence
 - Toast notifications for all CRUD operations
 - Responsive layout with Lucide icons
@@ -416,7 +437,7 @@ graph TB
         APP["TaskManager.Application<br/>Services, DTOs, Validators, Mapping"]
         INF["TaskManager.Infrastructure<br/>EF Core, Repositories, DI, Interceptors"]
         DOM["TaskManager.Domain<br/>Entities, Enums, Interfaces"]
-        TEST["TaskManager.Test<br/>xUnit + Moq (78 tests)"]
+        TEST["TaskManager.Test<br/>xUnit + Moq (84 tests)"]
     end
 
     API --> APP

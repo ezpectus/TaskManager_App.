@@ -4,24 +4,27 @@ import { taskService } from '../services/taskService'
 import type { TaskDto, TaskStatus } from '../types'
 import { getRelativeDeadline, getSmartScore } from '../utils/deadline'
 import { useToast } from '../context/ToastContext'
-import { Plus, Trello, Calendar, ArrowUp, ArrowDown, Minus } from 'lucide-react'
+import { Plus, Trello, Calendar, ArrowUp, ArrowDown, Minus, AlertCircle } from 'lucide-react'
 
 const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: 'Todo', label: 'To Do', color: 'border-t-blue-500' },
   { status: 'InProgress', label: 'In Progress', color: 'border-t-yellow-500' },
   { status: 'Done', label: 'Done', color: 'border-t-green-500' },
+  { status: 'Cancelled', label: 'Cancelled', color: 'border-t-gray-500' },
 ]
 
 const PRIORITY_BADGE: Record<string, string> = {
   Low: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
   Medium: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
   High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  Critical: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
 }
 
 const PRIORITY_ICONS: Record<string, React.ReactNode> = {
   High: <ArrowUp size={10} className="text-red-500" />,
   Medium: <Minus size={10} className="text-orange-500" />,
   Low: <ArrowDown size={10} className="text-gray-500" />,
+  Critical: <AlertCircle size={10} className="text-purple-500" />,
 }
 
 export default function KanbanPage() {
@@ -89,8 +92,8 @@ export default function KanbanPage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl p-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {[1, 2, 3].map((i) => (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
             <div key={i} className="card min-h-[400px] border-t-4 border-t-muted p-4">
               <div className="skeleton mb-4 h-6 w-24" />
               {[1, 2].map((j) => (
@@ -117,7 +120,7 @@ export default function KanbanPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {COLUMNS.map((col) => {
           const colTasks = tasks.filter((t) => t.status === col.status)
             .sort((a, b) => getSmartScore(b).total - getSmartScore(a).total)
@@ -166,7 +169,7 @@ export default function KanbanPage() {
                           </span>
                         )}
                         <select
-                          className="rounded border bg-transparent px-1 py-0.5 text-xs"
+                          className="rounded border bg-background px-1 py-0.5 text-xs text-foreground dark:bg-gray-800 dark:text-gray-100"
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) => {
                             if (task.status === 'Done' && e.target.value !== 'Done') {
@@ -182,6 +185,7 @@ export default function KanbanPage() {
                           <option value="Todo">Todo</option>
                           <option value="InProgress">In Progress</option>
                           <option value="Done">Done</option>
+                          <option value="Cancelled">Cancelled</option>
                         </select>
                       </div>
                     </div>

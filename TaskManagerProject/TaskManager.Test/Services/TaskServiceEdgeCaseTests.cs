@@ -104,7 +104,7 @@ public class TaskServiceEdgeCaseTests
     public async Task UpdateAsync_Should_UpdateStatus_When_OnlyStatusProvided()
     {
         var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium);
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
 
         var dto = new UpdateTaskRequest { Status = TaskManager.Domain.Enums.TaskStatus.InProgress };
@@ -118,7 +118,7 @@ public class TaskServiceEdgeCaseTests
     public async Task UpdateAsync_Should_UpdatePriority_When_OnlyPriorityProvided()
     {
         var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium);
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
 
         var dto = new UpdateTaskRequest { Priority = TaskPriority.High };
@@ -154,7 +154,7 @@ public class TaskServiceEdgeCaseTests
     public async Task DeleteAsync_Should_SetDeletedAt_When_TaskExists()
     {
         var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium);
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
 
         await _service.DeleteAsync(Guid.NewGuid(), CancellationToken.None);
@@ -168,7 +168,7 @@ public class TaskServiceEdgeCaseTests
     public async Task UpdateAsync_Should_UpdateDeadline_When_DeadlineProvided()
     {
         var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium);
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
 
         var newDeadline = new DateTime(2026, 12, 31);
@@ -184,7 +184,7 @@ public class TaskServiceEdgeCaseTests
     {
         var originalDeadline = new DateTime(2026, 6, 15);
         var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium, originalDeadline);
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
 
         var dto = new UpdateTaskRequest { Title = "Updated Title" };
@@ -221,7 +221,7 @@ public class TaskServiceEdgeCaseTests
     [Fact]
     public async Task UpdateAsync_Should_ReturnFalse_When_TaskNotFound()
     {
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((TaskItem?)null);
 
         var dto = new UpdateTaskRequest { Title = "Updated" };
@@ -233,7 +233,7 @@ public class TaskServiceEdgeCaseTests
     [Fact]
     public async Task DeleteAsync_Should_ReturnFalse_When_TaskNotFound()
     {
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((TaskItem?)null);
 
         var result = await _service.DeleteAsync(Guid.NewGuid(), CancellationToken.None);
@@ -244,7 +244,7 @@ public class TaskServiceEdgeCaseTests
     [Fact]
     public async Task AssignAsync_Should_ReturnFalse_When_TaskNotFound()
     {
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((TaskItem?)null);
 
         var result = await _service.AssignAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None);
@@ -256,7 +256,7 @@ public class TaskServiceEdgeCaseTests
     public async Task AssignAsync_Should_ReturnFalse_When_UserNotFound()
     {
         var task = TaskItem.Create("T", "D", TaskPriority.Medium);
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
         _userRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);

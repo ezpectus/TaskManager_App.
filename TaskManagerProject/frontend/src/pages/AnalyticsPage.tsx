@@ -3,6 +3,7 @@ import { taskService } from '../services/taskService'
 import type { TaskDto, TaskStatus, TaskPriority } from '../types'
 import { useToast } from '../context/ToastContext'
 import { BarChart3, TrendingUp, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { isOverdue } from '../utils/deadline'
 
 export default function AnalyticsPage() {
   const [tasks, setTasks] = useState<TaskDto[]>([])
@@ -42,14 +43,16 @@ export default function AnalyticsPage() {
     Todo: tasks.filter((t) => t.status === 'Todo').length,
     InProgress: tasks.filter((t) => t.status === 'InProgress').length,
     Done: tasks.filter((t) => t.status === 'Done').length,
+    Cancelled: tasks.filter((t) => t.status === 'Cancelled').length,
   }
   const byPriority: Record<TaskPriority, number> = {
     Low: tasks.filter((t) => t.priority === 'Low').length,
     Medium: tasks.filter((t) => t.priority === 'Medium').length,
     High: tasks.filter((t) => t.priority === 'High').length,
+    Critical: tasks.filter((t) => t.priority === 'Critical').length,
   }
   const completionRate = total > 0 ? Math.round((byStatus.Done / total) * 100) : 0
-  const overdue = tasks.filter((t) => t.status !== 'Done' && t.deadline && !t.deadline.startsWith('0001-01-01') && new Date(t.deadline) < new Date()).length
+  const overdue = tasks.filter((t) => isOverdue(t.deadline, t.status)).length
 
   const maxStatus = Math.max(...Object.values(byStatus), 1)
   const maxPriority = Math.max(...Object.values(byPriority), 1)
@@ -96,16 +99,18 @@ export default function AnalyticsPage() {
         <div className="card p-6">
           <h2 className="mb-4 text-lg font-semibold">Tasks by Status</h2>
           <div className="space-y-3">
-            {(['Todo', 'InProgress', 'Done'] as TaskStatus[]).map((status) => {
+            {(['Todo', 'InProgress', 'Done', 'Cancelled'] as TaskStatus[]).map((status) => {
               const colors: Record<TaskStatus, string> = {
                 Todo: 'bg-blue-500',
                 InProgress: 'bg-yellow-500',
                 Done: 'bg-green-500',
+                Cancelled: 'bg-gray-500',
               }
               const labels: Record<TaskStatus, string> = {
                 Todo: 'To Do',
                 InProgress: 'In Progress',
                 Done: 'Done',
+                Cancelled: 'Cancelled',
               }
               return (
                 <div key={status}>
@@ -128,11 +133,12 @@ export default function AnalyticsPage() {
         <div className="card p-6">
           <h2 className="mb-4 text-lg font-semibold">Tasks by Priority</h2>
           <div className="space-y-3">
-            {(['Low', 'Medium', 'High'] as TaskPriority[]).map((priority) => {
+            {(['Low', 'Medium', 'High', 'Critical'] as TaskPriority[]).map((priority) => {
               const colors: Record<TaskPriority, string> = {
                 Low: 'bg-gray-500',
                 Medium: 'bg-orange-500',
                 High: 'bg-red-500',
+                Critical: 'bg-purple-500',
               }
               return (
                 <div key={priority}>

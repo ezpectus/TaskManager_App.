@@ -24,7 +24,7 @@ public class UpdateTaskRequestValidator : AbstractValidator<UpdateTaskRequest>
         When(x => x.Deadline.HasValue, () =>
         {
             RuleFor(x => x.Deadline)
-                .GreaterThan(DateTime.UtcNow).WithMessage("Deadline must be in the future");
+                .GreaterThanOrEqualTo(DateTime.UtcNow.Date).WithMessage("Deadline must be today or in the future");
         });
     }
 }

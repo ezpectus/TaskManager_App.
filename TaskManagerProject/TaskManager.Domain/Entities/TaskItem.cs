@@ -40,7 +40,7 @@ public class TaskItem
             Description = description,
             Status = Domain.Enums.TaskStatus.Todo,
             Priority = priority,
-            Deadline = deadline ?? DateTime.MaxValue,
+            Deadline = deadline ?? DateTime.MinValue,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

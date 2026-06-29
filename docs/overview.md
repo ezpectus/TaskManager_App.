@@ -51,17 +51,19 @@ The project is a full-stack application with both backend and frontend:
 - Swagger/OpenAPI with XML comments and JWT Bearer scheme
 - CORS and health checks
 - DB seeding on startup
-- Unit tests (xUnit + Moq): 78 tests
+- Unit tests (xUnit + Moq): 84 backend tests + 32 frontend tests
 
 **Frontend:**
 - React 19 + TypeScript + TailwindCSS + Vite
 - JWT-based authentication with protected routes and refresh token support
 - Dashboard with task grid, search, filter chips, and table/list view toggle
-- Task detail page with inline editing, subtasks, comments, and markdown rendering
-- Kanban board with drag & drop between status columns
-- Analytics page with task statistics and progress bars
-- CSV export for tasks
-- Profile page with edit profile and change password functionality
+- **Full Cancelled status support** across Dashboard, Kanban (4 columns), Task Detail, Analytics, Profile
+- **Full Critical priority support** with purple badge + alert icon across all pages
+- Task detail page with inline editing (title, description, status, priority, deadline), subtasks, comments with author attribution, and markdown rendering
+- Kanban board with drag & drop between 4 status columns (Todo, In Progress, Done, Cancelled)
+- Analytics page with task statistics and progress bars (by status and priority, including Cancelled and Critical)
+- CSV export for tasks (with proper field escaping)
+- Profile page with edit profile, change password, task statistics (4 statuses), and recent tasks with deadlines
 - Dark mode with CSS variables and localStorage persistence
 - Toast notifications for all CRUD operations
 - Responsive layout with Lucide icons
@@ -297,7 +299,7 @@ All planned v1 features are now implemented:
 - Pagination and filtering — done
 - Soft delete — done
 - API versioning — done
-- Unit tests — done (78 tests)
+- Unit tests — done (84 backend + 32 frontend tests)
 - Refresh tokens — done
 - Password change endpoint — done
 - User profile update — done

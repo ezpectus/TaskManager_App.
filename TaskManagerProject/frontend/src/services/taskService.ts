@@ -18,6 +18,7 @@ export const taskService = {
     pageSize?: number
     status?: TaskStatus
     priority?: TaskPriority
+    userId?: string
     searchTerm?: string
   }) => {
     const query = new URLSearchParams()
@@ -25,6 +26,7 @@ export const taskService = {
     if (params.pageSize) query.set('pageSize', String(params.pageSize))
     if (params.status) query.set('status', params.status)
     if (params.priority) query.set('priority', params.priority)
+    if (params.userId) query.set('userId', params.userId)
     if (params.searchTerm) query.set('searchTerm', params.searchTerm)
     const qs = query.toString()
     return apiFetch<PagedResult<TaskDto>>(`/tasks${qs ? `?${qs}` : ''}`)

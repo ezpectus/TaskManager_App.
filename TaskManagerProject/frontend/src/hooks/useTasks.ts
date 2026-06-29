@@ -25,7 +25,13 @@ export function useTasks() {
 
   const createTask = useCallback(async (title: string, description: string, priority: TaskPriority, deadline: string = '') => {
     try {
-      await taskService.create({ title, description, priority, deadline })
+      const token = localStorage.getItem('token')
+      let userId: string | undefined
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.sub || payload.nameid
+      }
+      await taskService.create({ title, description, priority, deadline: deadline || undefined, userId })
       showToast('Task created', 'success')
       await fetchTasks()
     } catch {

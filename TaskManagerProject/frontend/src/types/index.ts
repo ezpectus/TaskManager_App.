@@ -1,5 +1,5 @@
-export type TaskStatus = 'Todo' | 'InProgress' | 'Done'
-export type TaskPriority = 'Low' | 'Medium' | 'High'
+export type TaskStatus = 'Todo' | 'InProgress' | 'Done' | 'Cancelled'
+export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Critical'
 
 export interface TaskDto {
   id: string
@@ -39,6 +39,7 @@ export interface CommentDto {
   createdAt: string
   taskId: string
   userId?: string | null
+  username?: string | null
 }
 
 export interface CreateCommentRequest {
@@ -60,9 +61,10 @@ export interface CreateTaskRequest {
 }
 
 export interface UpdateTaskRequest {
-  title: string
-  description: string
-  priority: TaskPriority
+  title?: string
+  description?: string
+  status?: TaskStatus
+  priority?: TaskPriority
   deadline?: string
 }
 

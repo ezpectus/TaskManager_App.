@@ -71,7 +71,7 @@ public class TaskServiceTests
     [Fact]
     public async Task UpdateAsync_Should_ReturnFalse_When_TaskNotFound()
     {
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((TaskItem?)null);
 
         var result = await _service.UpdateAsync(Guid.NewGuid(), new UpdateTaskRequest(), CancellationToken.None);
@@ -84,7 +84,7 @@ public class TaskServiceTests
     public async Task UpdateAsync_Should_ReturnTrue_And_SaveChanges_When_TaskFound()
     {
         var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium);
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
 
         var dto = new UpdateTaskRequest { Title = "Updated", Description = "Updated Desc" };
@@ -98,7 +98,7 @@ public class TaskServiceTests
     [Fact]
     public async Task DeleteAsync_Should_ReturnFalse_When_TaskNotFound()
     {
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((TaskItem?)null);
 
         var result = await _service.DeleteAsync(Guid.NewGuid(), CancellationToken.None);
@@ -111,7 +111,7 @@ public class TaskServiceTests
     public async Task DeleteAsync_Should_SoftDelete_And_SaveChanges()
     {
         var task = TaskItem.Create("Test", "Desc", TaskPriority.Medium);
-        _repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        _repoMock.Setup(r => r.GetByIdForUpdateAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(task);
 
         var result = await _service.DeleteAsync(Guid.NewGuid(), CancellationToken.None);

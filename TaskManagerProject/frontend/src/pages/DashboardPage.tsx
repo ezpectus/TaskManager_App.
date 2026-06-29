@@ -13,30 +13,34 @@ const STATUS_LABELS: Record<TaskStatus, string> = {
   Todo: 'To Do',
   InProgress: 'In Progress',
   Done: 'Done',
+  Cancelled: 'Cancelled',
 }
 
 const STATUS_COLORS: Record<TaskStatus, string> = {
   Todo: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   InProgress: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
   Done: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  Cancelled: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
 }
 
 const PRIORITY_COLORS: Record<string, string> = {
   Low: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
   Medium: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
   High: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  Critical: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
 }
 
 const PRIORITY_ICONS: Record<string, React.ReactNode> = {
   High: <ArrowUp size={12} className="text-red-500" />,
   Medium: <Minus size={12} className="text-orange-500" />,
   Low: <ArrowDown size={12} className="text-gray-500" />,
+  Critical: <AlertCircle size={12} className="text-purple-500" />,
 }
 
 type SortBy = 'smart' | 'deadline' | 'priority' | 'created' | 'title'
 type QuickFilter = 'overdue' | 'today' | 'highPriority' | null
 
-const PRIORITY_WEIGHT: Record<string, number> = { High: 3, Medium: 2, Low: 1 }
+const PRIORITY_WEIGHT: Record<string, number> = { Critical: 4, High: 3, Medium: 2, Low: 1 }
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState<TaskDto[]>([])
@@ -91,8 +95,16 @@ export default function DashboardPage() {
       switch (sortBy) {
         case 'smart':
           return getSmartScore(b).total - getSmartScore(a).total
-        case 'deadline':
-          return new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+        case 'deadline': {
+          const aTime = new Date(a.deadline).getTime()
+          const bTime = new Date(b.deadline).getTime()
+          const aNone = a.deadline.startsWith('0001-01-01')
+          const bNone = b.deadline.startsWith('0001-01-01')
+          if (aNone && bNone) return 0
+          if (aNone) return 1
+          if (bNone) return -1
+          return aTime - bTime
+        }
         case 'priority':
           return PRIORITY_WEIGHT[b.priority] - PRIORITY_WEIGHT[a.priority]
         case 'title':
@@ -208,7 +220,7 @@ export default function DashboardPage() {
           <ArrowUp size={12} className="mr-1 inline" /> High Priority ({highPriorityCount})
         </button>
         <span className="mx-1 text-muted-foreground">|</span>
-        {(['Todo', 'InProgress', 'Done'] as TaskStatus[]).map((s) => (
+        {(['Todo', 'InProgress', 'Done', 'Cancelled'] as TaskStatus[]).map((s) => (
           <button
             key={s}
             className={`badge cursor-pointer ${statusFilter === s ? STATUS_COLORS[s] : 'bg-secondary text-secondary-foreground hover:bg-accent'}`}
@@ -218,7 +230,7 @@ export default function DashboardPage() {
           </button>
         ))}
         <span className="mx-1 text-muted-foreground">|</span>
-        {(['Low', 'Medium', 'High'] as TaskPriority[]).map((p) => (
+        {(['Low', 'Medium', 'High', 'Critical'] as TaskPriority[]).map((p) => (
           <button
             key={p}
             className={`badge cursor-pointer ${priorityFilter === p ? PRIORITY_COLORS[p] : 'bg-secondary text-secondary-foreground hover:bg-accent'}`}
@@ -412,11 +424,18 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
     e.preventDefault()
     setLoading(true)
     try {
+      const token = localStorage.getItem('token')
+      let userId: string | undefined
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.sub || payload.nameid
+      }
       await taskService.create({
         title,
         description,
         priority: priority as any,
         deadline: deadline || undefined,
+        userId,
       })
       showToast('Task created successfully', 'success')
       onClose()
@@ -447,6 +466,7 @@ function CreateTaskModal({ onClose }: { onClose: () => void }) {
                 <option>Low</option>
                 <option>Medium</option>
                 <option>High</option>
+                <option>Critical</option>
               </select>
             </div>
             <div>
